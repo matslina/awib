@@ -64,8 +64,8 @@ def format(code, width=78, formatfile=None):
         for f in open(formatfile).read():
             if i >= clen:
                 break
-            if c.isspace:
-                output.append('c')
+            if f.isspace:
+                output.append(f)
             else:
                 output.append(code[i])
                 i += 1
