@@ -1,0 +1,116 @@
+## Introduction
+
+This file describes awib from a developer perspective. It is intended
+for brainfuck hackers interested in learning more about or contributing
+to awib. The reader is assumed to have read and understood the README.
+
+For detailed backend specific information, please refer to the DEVEL-file
+in the corresponding subdirectory.
+
+Throughout the code and docs, a percent ('%') sign is used to indicate
+memory content. We will not formally define this notation but believe
+that it's meaning is fairly clear most of the time.
+
+For instance:
+
+  % ::: (code) *c 4(21) 1 ::: 1
+  % where c = (code block span more than 10 cells ? 1 : 0)
+
+would indicate that:
+
+  There is a block of data called (code)
+  There is something on the lefthand side of (code) but we ignore it for now.
+  The pointer points at the first cell on the right of the code-block
+  The cell pointed at holds 1  if (code) is larger than 10 cells and
+  holds 0 if not.
+  To the right of the current cell there is a sequence of 4 cells all holding
+  21.  To the right of these lies a sequence of cells all holding 1.
+
+
+## Basic structure of awib
+
+Awib consists of a frontend, a couple of backends and some glue code
+to bind them together.
+
+The frontend reads brainfuck source code (in ascii) from standard
+input and compiles it into bytecode. One of the backends then takes
+over and compiles the bytecode towards its target platform and finally
+outputs the result.
+
+An important objective in the implementation of awib is to focus optimization
+efforts to the fronted and thereby produce efficient code regardless of
+backend. Ideally, a backend should be able to implement a simple
+operation-for-operation code expansion, and still produce well performing
+programs.
+
+We would also like to stress the importance of consistent behaviour among
+backends. A developer should be able to test a piece of code on one of
+the supported target platforms, and completely trust that it will exhibit
+the same behaviour with the other backends. The README describes the
+brainfuck environment backends are expected to implement.
+
+
+##  The frontend
+
+The frontend reads user input, determines the target platform and compiles
+brainfuck sourcecode into bytecode. The correctness of the source code is
+also verified and on incorrect code (i.e. mismatched/unbalanced loop
+instructions) an error message is output and execution is halted.
+
+Precondition:   % *0
+Postcondition:  % T *0 b (code) 0 M m
+                % where T is the index of the chosen backend
+                %       c==1 if bcode is correct, c==0 if not
+                %       Mm is a 16bit integer holding the maximum loop depth
+
+The target platform is indicated by its backend index, as given in table 1.
+
+ +----------------------+------------------+
+ |   TARGET             |   Backend index  |
+ +----------------------+------------------+
+ | 386_linux            | 1                |
+ +----------------------+------------------+
+ | lang_c               | 2                |
+ +----------------------+------------------+
+   Table 1 - Targets and backend indices
+
+For additional details, have a look at the commented frontend source code.
+
+
+##  Backend
+
+Backends can expect the bytecode to be correct, i.e. contain well-matched
+loop instructions. Developer documentation for the individual backends
+can be found in their respective DEVEL files.
+
+Pre-condition:   % 10(0) *(bcode) 0
+Post-condition:  % ::: 0 *0 :::
+
+
+## Format of the bytecode
+
+Table 2 describes the format of the bytecode. There are 9 operations,
+each of which 2 bytes large.
+
+ +----------+----------+----------------------------------+----------------+
+ | Bytecode | Mnemonic | Operation                        | Argument range |
+ +----------+----------+----------------------------------+----------------+
+ | 01 x     | ADD(x)   | Add x to the current cell        | 1 <= x <= 255  |
+ +----------+----------+----------------------------------+----------------+
+ | 02 00    | INPUT    | Read input into current cell     |      -         |
+ +----------+----------+----------------------------------+----------------+
+ | 03 x     | SUB(x)   | Subtract x from the current cell | 1 <= x <= 255  |
+ +----------+----------+----------------------------------+----------------+
+ | 04 00    | OUTPUT   | Output current cell              |      -         |
+ +----------+----------+----------------------------------+----------------+
+ | 05 x     | LEFT(x)  | Move pointer x cells left        | 1 <= x <= 127  |
+ +----------+----------+----------------------------------+----------------+
+ | 06 x     | RIGHT(x) | Move pointer x cells right       | 1 <= x <= 127  |
+ +----------+----------+----------------------------------+----------------+
+ | 07 00    | OPEN     | Open loop (bf: "[")              |      -         |
+ +----------+----------+----------------------------------+----------------+
+ | 08 00    | CLOSE    | Close loop (bf: "]")             |      -         |
+ +----------+----------+----------------------------------+----------------+
+ | 09 00    | CLEAR    | Set current cell to 0            |      -         |
+ +----------+----------+----------------------------------+----------------+
+   Table 2 - Bytecode

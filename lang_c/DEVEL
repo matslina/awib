@@ -1,0 +1,31 @@
+This document describes the lang_c backend, which translates awib bytecode
+into the widely supported C programming language.
+
+In addition to making awib an option for developers on nearly any platform,
+this backend, in combination with a good C compiler, turns out to produce
+very fast programs.
+
+The backend operates by outputting a header which sets up memory and defines
+a total of nine macros. Each macro corresponds to one of the awib bytecode
+operation. The header is as follows:
+
+ #include <stdio.h>
+ #define e9(x) *p=0;
+ #define e8(x) }
+ #define e7(x) while(*p){
+ #define e6(x) p+=x;
+ #define e5(x) p-=x;
+ #define e4(x) putchar(*p);
+ #define e3(x) *p-=x;
+ #define e2(x) c=getchar();if(c>=0)*p=c;
+ #define e1(x) *p+=x;
+ char buf[0xffff];
+ int main(){
+ char *p=buf;
+ int c;
+
+After this, for each bytecode operation P(i), "eP(i)" is output. When all the
+bytecode has been processed, a final footer terminating the C program is
+output:
+
+ return 0;}

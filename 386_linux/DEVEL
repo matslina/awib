@@ -1,0 +1,72 @@
+## Introduction
+
+This file describes the awib 386-linux backend from a developer perspective.
+It is written for brainfuck hackers who are curious about this particular
+backend and, hopefully, interested in implementing a backend of their own.
+
+The 386-linux backend compiles awib bytecode into ELF-binaries runnable
+on i386 compatible machines running Linux (i.e. most home PCs running
+a GNU/Linux-distribution).
+
+Mats Linander - 2007-08-29
+
+
+## Generated output
+
+The backend outputs ELF-headers followed by some predetermined machine code
+responsible for memory allocation and other preparations. After this the
+actual compiled awib bytecode follows. As indicated and described by table 1,
+compiling a bytecode operation to i386 asm is a simple matter in most cases,
+the most significant exception being the looping constructs OPEN and CLOSE.
+
+ELF-headers, code for memory allocation and preparations and code for
+calling the final sys_exit(0) when terminating, is detailed in the file
+"h.asm". Also check out the file "h.disasm" holding disassembly output
+for "h.asm".
+
+ +---------------+-------------------+-------------------------------+
+ | Operation     | i386 Asm          | Machine code (hex)            |
+ +---------------+-------------------+-------------------------------+
+ | ADD(x)    x=1 | inc byte [ecx]    | FE01                          |
+ +---------------+-------------------+-------------------------------+
+ | ADD(x)    x>1 | add byte [ecx],x  | 8001x                         |
+ +---------------+-------------------+-------------------------------+
+ | INPUT         | mov eax,edi       | 89F8                          |
+ |               | dec ebx           | 4B                            |
+ |               | int 0x80          | CD80                          |
+ |               | inc ebx           | 43                            |
+ +-------------------------------------------------------------------|
+ | SUB(x)    x=1 | dec byte [ecx]    | FE09                          |
+ +---------------+-------------------+-------------------------------+
+ | SUB(x)    x>1 | sub byte [ecx],x  | 8029x                         |
+ +---------------+-------------------+-------------------------------+
+ | OUTPUT        | mov eax,esi       | 89F0                          |
+ |               | int 0x80          | CD80                          |
+ +---------------+-------------------+-------------------------------+
+ | LEFT(x)   x=1 | dec ecx           | 49                            |
+ +---------------+-------------------+-------------------------------+
+ | LEFT(x)   x=2 | sub ecx,ebp       | 29E9                          |
+ +---------------+-------------------+-------------------------------+
+ | LEFT(x)   x>2 | sub ecx,byte x    | 83E9x                         |
+ +---------------+-------------------+-------------------------------+
+ | RIGHT(x)  x=1 | inc ecx           | 41                            |
+ +---------------+-------------------+-------------------------------+
+ | RIGHT(x)  x=2 | add ecx,ebp       | 01E9                          |
+ +---------------+-------------------+-------------------------------+
+ | RIGHT(x)  x>2 | add ecx,byte x    | 83C1x                         |
+ +---------------+-------------------+-------------------------------+
+ | OPEN          | cmp bh,[ecx]      | 3A39                          |
+ |               | je word Y         | 660F84xxxx                    |
+ +---------------+-------------------+-------------------------------+
+ | CLOSE         | cmp bh,[ecx]      | 3A39                          |
+ |               | jne word -Y       | 660F85zzzz                   |
+ +---------------+-------------------+-------------------------------+
+ | CLEAR         | mov [ecx],bh      | 8839                          |
+ +---------------+-------------------+-------------------------------+
+   Table 1 - Bytecodes with i386 Linux asm counterparts
+
+For the operations OPEN and CLOSE, the jump offset Y must be replaced
+with a 16 bit integer holding the size of the code after the OPEN
+up to and including the CLOSE.
+
+E.g.:  OPEN,OUTPUT,CLOSE -> Y = sizeof(OUTPUT) + sizeof(CLOSE) = 11
