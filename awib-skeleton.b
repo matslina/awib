@@ -1,9 +1,5 @@
-[ This is the awib skeleton. The frontend and the backends are to be
-  inserted into the code as indicated by the comments.
-]
-
->>>>>>>+
-% 7(0) *T 0    (where T = index of target platform)
+>>>>>>>++
+% 7(0) *T 0    (where T = index of default target platform)
 
 #include(frontend/frontend.b)
 
