@@ -1,0 +1,114 @@
+## About
+
+Typically, an awib  programming language backend will operate according to
+the following algorithm:
+
+ | output(header)
+ | for each byte code instruction P with argument Q:
+ |     output(code_P)
+ |     if P is ADD, SUB, LEFT or RIGHT:
+ |         output(base10(Q))
+ |         output(post_P)
+ | output(footer)
+
+The backend's output will begin with some header and end with some footer. In
+between is a series of one-to-one translations of awib bytecode instructions.
+Some of the instructions require the 1 byte argument Q being output in base 10
+followed by some terminating string post_P.
+
+Obviously, given the proper framework, the task of implementing a particular
+language backend could be reduced to defining a header, a footer and the code_P
+and post_P strings. The lang_generic backend provides such a framework.
+
+
+## Language definition
+
+A language definition is simply a piece of brainfuck code capable of printing
+each of the constant code blocks. When run, it is passed an integer S which
+indicates which block to output. Table 1 lists the values of S and what
+outputs they trigger.
+
+The precondition for a language definition is:
+% 7(0) *S (important stuff)
+
+Postcondition is:
+% 7(0) *0 (important stuff)
+
+ +-----+--------------+
+ |  S  | Output       |
+ +-----+--------------+
+ |  1  | code_ADD     |
+ +-----+--------------+
+ |  2  | code_INPUT   |
+ +-----+--------------+
+ |  3  | code_SUB     |
+ +-----+--------------+
+ |  4  | code_OUTPUT  |
+ +-----+--------------+
+ |  5  | code_LEFT    |
+ +-----+--------------+
+ |  6  | code_RIGHT   |
+ +-----+--------------+
+ |  7  | code_OPEN    |
+ +-----+--------------+
+ |  8  | code_CLOSE   |
+ +-----+--------------+
+ |  9  | code_CLEAR   |
+ +-----+--------------+
+ | 21  | post_ADD     |
+ +-----+--------------+
+ | 23  | post_SUB     |
+ +-----+--------------+
+ | 25  | post_LEFT    |
+ +-----+--------------+
+ | 26  | post_RIGHT   |
+ +-----+--------------+
+ | 31  | header       |
+ +-----+--------------+
+ | 32  | footer       |
+ +-----+--------------+
+   Table 1
+
+
+## Implemented languages
+
+### Java
+
+ +--------------+------------------------------------------------------------+
+ | Code block   | Output                                                     |
+ +--------------+------------------------------------------------------------+
+ | code_ADD     | p[i]+=                                                     |
+ +--------------+------------------------------------------------------------+
+ | code_INPUT   | System.in.read(p,i,1);                                     |
+ +--------------+------------------------------------------------------------+
+ | code_SUB     | p[i]-=                                                     |
+ +--------------+------------------------------------------------------------+
+ | code_OUTPUT  | System.out.write(p,i,1);                                   |
+ +--------------+------------------------------------------------------------+
+ | code_LEFT    | i-=                                                        |
+ +--------------+------------------------------------------------------------+
+ | code_RIGHT   | i+=                                                        |
+ +--------------+------------------------------------------------------------+
+ | code_OPEN    | while(p[i]!=0){                                            |
+ +--------------+------------------------------------------------------------+
+ | code_CLOSE   | }                                                          |
+ +--------------+------------------------------------------------------------+
+ | code_CLEAR   | p[i]=0;                                                    |
+ +--------------+------------------------------------------------------------+
+ | post_ADD     | ;                                                          |
+ +--------------+------------------------------------------------------------+
+ | post_SUB     | ;                                                          |
+ +--------------+------------------------------------------------------------+
+ | post_LEFT    | ;                                                          |
+ +--------------+------------------------------------------------------------+
+ | post_RIGHT   | ;                                                          |
+ +--------------+------------------------------------------------------------+
+ | header       | import java.io.*;                                          |
+ |              | class Program{                                             |
+ |              | static byte p[]=new byte[0xffff];                          |
+ |              | static int i;                                              |
+ |              | public static void main(String args[]) throws IOException{ |
+ +--------------+------------------------------------------------------------+
+ | footer       | }                                                          |
+ +--------------+------------------------------------------------------------+
+   Table 2 - Language definition for Java

@@ -8,7 +8,19 @@
 
 // If bytecode is OK then run backend T on bytecode
 
->[<<[-[-[[-]>>-<<]
+>[<<[-[-[-[-[[-]>>-<<]
+
+// T=4: lang_java
+// T=3: lang_dummy
+>>[-<++++>]<<]>>[-<+++>]<<]
+% 7(0) *0 t 0 (code) 0 M m   (where t = (T in {3 4} ? T : 0))
+>[[->+<]>>
+% 9(0) T *(code) 0 M m
+
+#include(lang_generic/backend.b)
+
+% ::: 0 0 *0 0 0
+]<
 
 >>[->
 // T=2: lang_c
@@ -28,3 +40,4 @@
 % ::: 0 *0 0 :::
 <]<<]
 ]
+

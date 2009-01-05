@@ -44,19 +44,29 @@
 # and overwrite the target index T accordingly
 # we take care not to overwrite the last read X as it may be bf and should
 # be passed on to the bytecode compiler below
-<<<<+[->+<]>[-<<[<]<<<+>>>>[>]>]++++++++++++++++++++>>>>[-<<<<->>>>]<<<+++
+<<<<+[->+<]>[-<<[<]<<<+>>>>[>]>]++++++++++++++++++++>>>>[-<<<<->>>>]<<<++++
 <<<[<]<<<->>>>[>]>>
-% T X 0 0 0 (target) 0 s *3 0 0   (where s = strlen(target))
-[[->+>+<<]>[-<+>]+>-[-[-[<->[-]]
+% T X 0 0 0 (target) 0 s *4 0 0   (where s = strlen(target))
+[[->+>+<<]>[-<+>]+>-[-[-[-[<->[-]]
+
+<[-
+# build target string for backend index 4
+% T X 0 0 0 (target) 0 s 4 *0 0
+>>+++++++[->+++++++<]+++++++++>
+[->++>++>++>++>++>++>++>++>++<<<<<<<<<]>
+++++++++++>->++++++++++++>+++++>--->++++++++>->++++++++++++++++++++>-
+<<<<<<<<<<<<
+% T X 0 0 0 (target) 0 s 4 *0 0 9 0 "lang_java" 0
+]>]
 
 <[-
 # build target string for backend index 3
 % T X 0 0 0 (target) 0 s 3 *0 0
->>+++++++[->+++++++<]++++++++++++++>
-[->++>++>++>++>++>++>++>++>++>++>++>++>++>++<<<<<<<<<<<<<<]>
-++++++++++>->++++++++++++>+++++>--->>++++++++++++++++>->+++++++>++++++++++++>
-++++>+++++++++++++++++++>+>+++++++++<<<<<<<<<<<<<<<<<
-% T X 0 0 0 (target) 0 s 3 *0 0 14 0 "lang_brainfuck" 0
+>>+++++++[->+++++++<]++++++++++>
+[->++>++>++>++>++>++>++>++>++>++<<<<<<<<<<]>
+++++++++++>->++++++++++++>+++++>--->++>+++++++++++++++++++>+++++++++++>
++++++++++++>+++++++++++++++++++++++<<<<<<<<<<<<<
+% T X 0 0 0 (target) 0 s 3 *0 0 10 0 "lang_dummy" 0
 ]>]
 
 <[-
@@ -91,7 +101,7 @@
 [-<+<+>>]<[>>[>]>>>>>[>]>+>[<-]<[<]>[-<<[<]<[-]<<<<[<]<[-]+>>[>]>>>>>[>]>>+<]>-<<<[<]<<<<<[<]<-]
 % T X 0 (target F) *0 0 (target) 0 s i c 0 (1sled) 0 0 sub(G F) (string) 0
 >>[>]>>>>>[>]>>[[-]<<<[<]<[-]>>[>]>>]<<+[<]<<<<<[<]>
-% T X 0 (target F) 0 0 *(target) 0 s i c 0 (1sled) 1 0 0 (string) 
+% T X 0 (target F) 0 0 *(target) 0 s i c 0 (1sled) 1 0 0 (string)
 ]
 % T X 0 (target) 0 0 *0 s i c  0 (1sled) 0
 <<<[[->>+<<]<]>>>[>]>>>>>[>]<[-<]<
@@ -118,7 +128,7 @@
 
 ## Phase 2
 ## Bytecode compilation
-## 
+##
 
 % T 11(0) *X    (where X is user input)
 # if read char X is not EOF then enter main loop
@@ -173,7 +183,7 @@
 { 16b dec >>+<[>-<[->>+<<]]>>[-<<+>>]<<->[-<+
           <->++++++++[->++++++++<]>[-<++++>]<->]<< }
 <<]+++++++++[-<++++++++++>]<++++[-]
->>> 
+>>>
 { 16b iszero >>+<[>-]>[>]<<<[[->>>+<<<]>>[-]<<]>>>[-<<<+>>>]<<< }
 # if Ll=0 then delete OPEN and set c=0 to break
 >>[-<<<<<<[-]<<------->>>>>>]<<<<<<
@@ -282,7 +292,7 @@
 
 ## Phase 3
 ## Code verification
-## 
+##
 
 # move code leftwards and ensure that all OPEN/CLOSE are balanced
 # in the process we calculate the maximum loop (ie OPEN/CLOSE) depth
