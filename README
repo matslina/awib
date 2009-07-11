@@ -63,10 +63,10 @@ Awib will then produce output accordingly.
 
 Awib is an optimizing compiler:
 
- o) Sequences of '-','<','>' and '+' are contracted into single
+ o) Sequences of '-','>','<' and '+' are contracted into single
     instructions. E.g. "----" is replaced with a single ADD(4).
 
- o) Mutually cancelling instructions are reduced. E.g. "+++--<>>"
+ o) Mutually cancelling instructions are reduced. E.g. "+++-->><"
     is equivalent to "+>" and is compiled accordingly.
 
  o) Some common constructs are identified and replaced with single
