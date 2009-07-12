@@ -55,23 +55,35 @@ def preprocess(filename):
     return ''.join(data)
 
 def format(code, width=78, formatfile=None):
-    """Formats code for pretty-printing."""
+    """Formats preprocessed code for pretty-printing."""
 
-    output = []
+    if formatfile is None:
+        return [code[j:j+width] for j in xrange(0, len(code), width)]
 
-    clen, i = len(code), 0
-    if formatfile:
-        for f in open(formatfile).read():
-            if i >= clen:
-                break
-            if f.isspace():
-                output.append(f)
-            else:
-                output.append(code[i])
-                i += 1
-    return '\n'.join([''.join(output)] +
-                     [code[j:j+width] for j in xrange(i, clen, width)] +
-                     ['\n'])
+    out, line, code = list(), list(), list(code)
+    for f in open(formatfile).read()[:len(code)]:
+        if f == ' ':
+            line.append(' ')
+        elif f == '\n':
+            out.append(''.join(line))
+            line = []
+        else:
+            line.append(code.pop(0))
+    if line:
+        out.append(''.join(line))
+
+    return out + [''.join(code[j:j+width]) for j in xrange(0,len(code),width)]
+
+def attach_interpreter(code):
+    CHEADER = 'char C[] ="\\'
+    CFOOTER = ("/*[*/#define q(w,e) case w:e;break;\nint i,I,l;char __"
+               "[0xffff];void _(int d){for(l=d;l;I+=d)l+=C[I+d]=='['?1"
+               ":C[I+d]==']'?-1:0;}main(){while(I<sizeof(C)){switch(C["
+               "I]){q('+',__[i]++)q('-',__[i]--)q('>',i++)q('<',i--)q("
+               "'.',putchar(__[i]))q(',',__[i]=getchar())q('[',if(!__["
+               "i])_(1))q(']',if(__[i])_(-1))}I++;}}/*]*/")
+
+    return [CHEADER] + [line + ' \\' for line in code] + ['";', CFOOTER]
 
 def main():
     parser = optparse.OptionParser(usage="%prog [options] FILE")
@@ -81,6 +93,9 @@ def main():
     parser.add_option("-w", "--width",
                       dest="width", type="int", metavar="W",default=78,
                       help="write output using line width W (default 78)")
+    parser.add_option('-c', '--interpreter',
+                      dest="interpreter", action='store_true',default=False,
+                      help="attach C interpreter")
     (options, args) = parser.parse_args()
 
     filename = None
@@ -88,7 +103,11 @@ def main():
         filename = os.path.abspath(args[0])
 
     code = preprocess(filename)
-    sys.stdout.write(format(code, options.width, options.format))
+    code = format(code, options.width, options.format)
+    if options.interpreter:
+        code = attach_interpreter(code)
+    sys.stdout.write('\n'.join(code))
+    sys.stdout.write('\n')
 
     return 0
 
