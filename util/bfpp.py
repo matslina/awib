@@ -75,15 +75,20 @@ def format(code, width=78, formatfile=None):
     return out + [''.join(code[j:j+width]) for j in xrange(0,len(code),width)]
 
 def attach_interpreter(code):
-    CHEADER = 'char C[] ="\\'
-    CFOOTER = ("/*[*/#define q(w,e) case w:e;break;\nint i,I,l;char __"
-               "[0xffff];void _(int d){for(l=d;l;I+=d)l+=C[I+d]=='['?1"
-               ":C[I+d]==']'?-1:0;}main(){while(I<sizeof(C)){switch(C["
-               "I]){q('+',__[i]++)q('-',__[i]--)q('>',i++)q('<',i--)q("
-               "'.',putchar(__[i]))q(',',__[i]=getchar())q('[',if(!__["
-               "i])_(1))q(']',if(__[i])_(-1))}I++;}}/*]*/")
-
-    return [CHEADER] + [line + ' \\' for line in code] + ['";', CFOOTER]
+    CFOOTER = ("/*[*/#define _$_(___,_$,__)(K[_$$]^(___))?_"
+               "$_^_$_:_$ _$_ __;\n_$_,_$$,__$,____,__[4>>0"
+               "02<<020];_(__){__$=____?__$:__;____=__;whil"
+               "e(__$){__$+=*(__*__*__+_$$+K)-0133?22^_$$[K"
+               "+__]^'K'?'.'^'u'^'[':-(__[_$$+K]&1):__*__;_"
+               "$$+=__;_(__);}}___(){while(K[++_$$]){    _$"
+               "_('v'^']',__[,]++)_$_(055|___==___,__[,]--)"
+               "_$_('K'^'u',,++)_$_('w'^'K',--,)_$_('_'^4,_"
+               "_[,]?_(_$$[K]&1>>1):_(_$$[K]&1))_$_('v'^'+'"
+               ",__[,]?_((_$$[K]&2)-(_$$[K]&1)):_(0))K[_$$]"
+               "-46?_(__[_$_]&1>>1):putchar(__[_$_]);if(_$$"
+               "[K]^(1<<1^'.'))_(0);else{__[_$_]=getchar();"
+               "}}}main(){--_$$;___();}/*]*/")
+    return ['char K[]="\\'] + [line + ' \\' for line in code] + ['";', CFOOTER]
 
 def main():
     parser = optparse.OptionParser(usage="%prog [options] FILE")
