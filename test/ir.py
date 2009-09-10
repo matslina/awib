@@ -8,8 +8,8 @@ class Op(object):
     range = [0]
 
     def __init__(self, arg=0):
-        if arg in self.range:
-            raise ValueError("argument out of range")
+        if arg not in self.range:
+            raise ValueError("argument %s out of range" % arg)
         self.arg = arg
 
     def __str__(self):
@@ -42,8 +42,8 @@ class RIGHT(Op):
     range = xrange(1,128)
 class INPUT(Op): code = 2
 class OUTPUT(Op): code = 4
-class CLOSE(Op): code = 7
-class OPEN(Op): code = 8
+class OPEN(Op): code = 7
+class CLOSE(Op): code = 8
 class CLEAR(Op): code = 9
 
 operations = [ADD, SUB, LEFT, RIGHT, INPUT, OUTPUT, CLOSE, OPEN, CLEAR]

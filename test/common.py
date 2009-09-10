@@ -2,7 +2,7 @@
 
 import unittest
 
-from awip import AWIP, AWIPError
+from awip import AWIP, AWIPError, AWIPStepError
 
 
 class BFTestCase(unittest.TestCase):
@@ -10,7 +10,7 @@ class BFTestCase(unittest.TestCase):
         unittest.TestCase.__init__(self, *args, **kwargs)
         self._code = None
 
-    def run_bf(self, code, input, steps=500000,
+    def run_bf(self, code, input, steps=50000,
             check_output=True, check_memory=True, precondition=[]):
         """Runs code with different cell size and eof-behaviour.
 
@@ -39,7 +39,12 @@ class BFTestCase(unittest.TestCase):
                     out, mem = self._interpreter.run(input=input,
                                                      memory=precondition,
                                                      cell_size=cell_size,
-                                                     eof_behaviour=eof_code)
+                                                     eof_behaviour=eof_code,
+                                                     steps=steps)
+                except AWIPStepError:
+                    self.fail("code didn't terminate within %d steps for "
+                              "(%d bits, %s)" %
+                              (steps, cell_size, eof_name))
                 except AWIPError, ae:
                     self.fail("code fails for (%d bits, %s): %s" %
                               (cell_size, eof_name, ae))

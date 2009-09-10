@@ -235,7 +235,10 @@ class AWIP:
             elif op == INPUT:
                 eof = True
                 if input:
-                    mem[p] = input.pop(0) % mod
+                    mem[p] = input.pop(0)
+                    if isinstance(mem[p], str):
+                        mem[p] = ord(mem[p])
+                    mem[p] %= mod
                     eof = False
                 elif input_file:
                     c = input_file.read(1)
