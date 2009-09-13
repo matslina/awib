@@ -127,8 +127,9 @@ def attach_interpreter(code):
             'KK="\\\n'
             '%(bf_code)s";\n'
             '\n'
-            '#if 0\n'
+            '#if 0/*[\n'
             '%(bash_interpreter)s\n'
+            '#]*/\n'
             '#endif\n' % stuff]
 
 def main():
