@@ -75,20 +75,61 @@ def format(code, width=78, formatfile=None):
     return out + [''.join(code[j:j+width]) for j in xrange(0,len(code),width)]
 
 def attach_interpreter(code):
-    CFOOTER = ("/*[*/#define _K_(___,_K,__)(K[_KK]^(___))?_"
-               "K_^_K_:_K _K_ __;\n_K_,_KK,__K,____,__[4>>0"
-               "02<<020];_(__){__K=____?__K:__;____=__;whil"
-               "e(__K){__K+=*(__*__*__+_KK+K)-0133?22^_KK[K"
-               "+__]^'K'?'.'^'u'^'[':-(__[_KK+K]&1):__*__;_"
-               "KK+=__;_(__);}}___(){while(K[++_KK]){    _K"
-               "_('v'^']',__[,]++)_K_(055|___==___,__[,]--)"
-               "_K_('K'^'u',,++)_K_('w'^'K',--,)_K_('_'^4,_"
-               "_[,]?_(_KK[K]&1>>1):_(_KK[K]&1))_K_('v'^'+'"
-               ",__[,]?_((_KK[K]&2)-(_KK[K]&1)):_(0))K[_KK]"
-               "-46?_(__[_K_]&1>>1):putchar(__[_K_]);if(_KK"
-               "[K]^(1<<1^'.'))_(0);else{__[_K_]=getchar();"
-               "}}}main(){--_KK;___();}/*]*/")
-    return ['char K[]="\\'] + [line + ' \\' for line in code] + ['";', CFOOTER]
+    stuff = {}
+
+    # assumes 'char *K' points at code to run
+    stuff['c_interpreter'] =\
+        ("#define _K_(___,_K,__)(K[_KK]^(___))?_K_^_K_:"
+         "_K _K_ __;\n_K_,_KK,__K,____,__[4>>002<<020];"
+         "_(__){__K=____?__K:__;____=__;while(__K){__K+"
+         "=*(__*__*__+_KK+K)-0133?22^_KK[K+__]^'K'?'.'^"
+         "'u'^'[':-(__[_KK+K]&1):__*__;_KK+=__;_(__);}}"
+         "___(){while(K[++_KK]){    _K_('v'^']',__[,]++"
+         ")_K_(055|___==___,__[,]--)_K_('K'^'u',,++)_K_"
+         "('w'^'K',--,)_K_('_'^4,__[,]?_(_KK[K]&1>>1):_"
+         "(_KK[K]&1))_K_('v'^'+',__[,]?_((_KK[K]&2)-(_K"
+         "K[K]&1)):_(0))K[_KK]-46?_(__[_K_]&1>>1):putch"
+         "ar(__[_K_]);if(_KK[K]^(1<<1^'.'))_(0);else{__"
+         "[_K_]=getchar();}}}main(){--_KK;___();}")
+
+    # assumes $KK holds code to run
+    stuff['bash_interpreter'] =\
+        (r'O0=($(echo "$KK"|sed -e"s/\(.\)/\\1 /g"));OO'
+         r'=($(for ((i=0;i<65535;i++));do echo "0";done'
+         r'));Oo=0;oo="";oO=0;o0=0;while [ $oO -lt ${#O'
+         r'0[@]} ]; do case ${O0[$oO]} in ">")o0=$((o0+'
+         r'1));;"<")o0=$((o0-1));;"+")OO[$o0]=$(((${OO['
+         r'$o0]}+1)%0x100));;"-")OO[$o0]=$(((${OO[$o0]}'
+         r'+0377)%0x100));;".")echo -ne "\0$(((${OO[$o0'
+         r']}/64)%8))$(((${OO[o0]}/8)%8))$((${OO[o0]}%8'
+         r'))";;",")if ((${#oo}==0)); then read oo;fi;i'
+         r'f ((${#oo}>0)); then OO[$o0]=$(printf "%d" "'
+          '\'${oo:0:1}");oo=${oo:1};fi;;"[")if ((${OO[$'
+         r'o0]}==0));then c=1;while (($c>0));do oO=$(($'
+         r'oO+1));if [ ${O0[$oO]} == \[ ];then c=$((c+1'
+         r'));fi;if [ ${O0[$oO]} == \] ]; then ((c--));'
+         r'fi;done;else O0O[$Oo]=$oO;((Oo++));fi;;"]")('
+         r'(Oo--));if ((${OO[$o0]}!=0)); then oO=$((${O'
+         r'0O[$Oo]}-1));fi;;esac;((oO++));done;')
+
+    stuff['bf_code'] = ' \\\n'.join(code)
+
+    return ['#define KK char *K\n'
+            '#define true char *K\n'
+            'true;\n'
+            '#define EOF /*\n'
+            'cat>>/dev/null<<EOF\n'
+            '[*/\n'
+            '%(c_interpreter)s\n'
+            '/*]*/\n'
+            'EOF\n'
+            '\n'
+            'KK="\\\n'
+            '%(bf_code)s";\n'
+            '\n'
+            '#if 0\n'
+            '%(bash_interpreter)s\n'
+            '#endif\n' % stuff]
 
 def main():
     parser = optparse.OptionParser(usage="%prog [options] FILE")
@@ -98,9 +139,9 @@ def main():
     parser.add_option("-w", "--width",
                       dest="width", type="int", metavar="W",default=78,
                       help="write output using line width W (default 78)")
-    parser.add_option('-c', '--interpreter',
+    parser.add_option('', '--interpreter',
                       dest="interpreter", action='store_true',default=False,
-                      help="attach C interpreter")
+                      help="attach C and bash interpreters")
     (options, args) = parser.parse_args()
 
     filename = None
