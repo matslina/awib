@@ -10,7 +10,7 @@
 % *T     (where T = index of target platform)
 
 # read bytes until EOF or bf instruction or '@' is reached
->>>>+[>,+
+>>>>+[>[-],+
 % T 0 0 0 1 *inc(X) 0 0 0  (where X is byte read)
 [->+>+<<]>>[-<<+>>]+<
 % T 0 0 0 1 inc(X) *inc(X) 1 0
