@@ -4,6 +4,11 @@ import unittest
 
 from awip import AWIP, AWIPError, AWIPStepError
 
+def _diff_pos(a,b):
+    for i in xrange(min(len(a), len(b))):
+        if a[i] != b[i]:
+            return i
+    return -1
 
 class BFTestCase(unittest.TestCase):
     def __init__(self, *args, **kwargs):
@@ -52,16 +57,21 @@ class BFTestCase(unittest.TestCase):
                 if output is None:
                     output = out
                 elif check_output and output != out:
+                    i = _diff_pos(output, out)
                     self.fail("output differs between (%d bits, %s) and "
-                              "(%d bits, %s)" %
-                              (cell_size, eof_name, prev_cs, prev_eb))
+                              "(%d bits, %s) in position %d: 0x%02x != 0x%02x" %
+                              (cell_size, eof_name, prev_cs, prev_eb,
+                               i, out[i], output[i]))
 
                 if memory is None:
                     memory = mem
                 elif check_memory and memory != mem:
+                    i = _diff_pos(memory, mem)
                     self.fail("memory (post exec) differs between "
-                              "(%d bits, %s) and (%d bits, %s)" %
-                              (cell_size, eof_name, prev_cs, prev_eb))
+                              "(%d bits, %s) and (%d bits, %s) in position"
+                              " %d: 0x%02x != 0x%02x" %
+                              (cell_size, eof_name, prev_cs, prev_eb,
+                               i, mem[i], memory[i]))
 
                 prev_cs, prev_eb = cell_size, eof_name
 
