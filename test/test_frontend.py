@@ -16,7 +16,7 @@ class FrontendTest(common.BFTestCase):
     def setUp(self):
         self.code = open(frontend_path).read()
 
-    def _check_post_condition(self, mem, code, target=None):
+    def _check_post_condition(self, mem, code, target=None, maxdepth=None):
         """Checks frontend post execution memory against expected ir code."""
 
         # sanity
@@ -41,6 +41,10 @@ class FrontendTest(common.BFTestCase):
         self.assert_( not (len(mem) > i+3), "junk data beyond max loop depth")
         self.assertEquals((i-3)/2, len(code), "expected %d ops, got %d" %
                           (len(code), (i-3)/2))
+        if maxdepth is not None:
+            Mm = mem[i+1]*0xff + mem[i+2]
+            self.assertEquals(Mm, maxdepth, "wrong max depth, got %d not %d" %
+                              (Mm, maxdepth))
 
         compile = mem[3:i]
 
@@ -66,11 +70,11 @@ class FrontendTest(common.BFTestCase):
     ## Byte code compilation
     ##
 
-    def _run_and_check_ir(self, program, ir):
+    def _run_and_check_ir(self, program, ir, maxdepth=1):
         out, mem = self.run_bf(self.code, program,
                                precondition=[1], steps=5000000)
         self.assertEquals(out, [], "frontend should not produce output")
-        self._check_post_condition(mem, ir)
+        self._check_post_condition(mem, ir, maxdepth=maxdepth)
 
     def test_empty_input(self):
         self._run_and_check_ir("", [])
@@ -84,7 +88,7 @@ class FrontendTest(common.BFTestCase):
                                 ir.SUB(1),
                                 ir.OPEN(),
                                 ir.INPUT(),
-                                ir.CLOSE()])
+                                ir.CLOSE()], maxdepth=2)
 
     def test_nested_loops(self):
         self._run_and_check_ir("+[-[+<].]>[[[]+]+]+[+]",
@@ -109,7 +113,7 @@ class FrontendTest(common.BFTestCase):
                                 ir.ADD(1),
                                 ir.OPEN(),
                                   ir.ADD(1),
-                                ir.CLOSE()])
+                                ir.CLOSE()], maxdepth=4)
 
     def test_clear_loops(self):
         self._run_and_check_ir("+[-]+[+]",
@@ -118,7 +122,7 @@ class FrontendTest(common.BFTestCase):
                                 ir.ADD(1),
                                 ir.OPEN(),
                                   ir.ADD(1),
-                                ir.CLOSE()])
+                                ir.CLOSE()], maxdepth=2)
 
     def test_loop_elimination(self):
         self._run_and_check_ir("[+++]+[][+++].[-][+++]",
@@ -126,7 +130,7 @@ class FrontendTest(common.BFTestCase):
                                 ir.OPEN(),
                                 ir.CLOSE(),
                                 ir.OUTPUT(),
-                                ir.CLEAR()])
+                                ir.CLEAR()], maxdepth=2)
         self._run_and_check_ir("[-][+++]", [])
 
     def test_cancellation(self):
@@ -251,8 +255,6 @@ class FrontendTest(common.BFTestCase):
         self._run_and_check_mismatched("]++[-]+[")
         self._run_and_check_mismatched("][")
 
-    def test_maximum_loop_depth(self):
-        pass
 
 if __name__ == "__main__":
     import unittest
