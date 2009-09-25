@@ -226,8 +226,30 @@ class FrontendTest(common.BFTestCase):
         self._run_and_check_target(17, _386_LINUX, "@386_linux[foobar]")
         self._run_and_check_target(17, _386_LINUX, "@386_linux foobar")
 
+
+    ##
+    ## Other stuff
+    ##
+
+    def _run_and_check_mismatched(self, program):
+        out, mem = self.run_bf(self.code, program,
+                               precondition=[1], steps=5000000)
+        self.assertEquals(''.join(chr(c) for c in out),
+                          'Error: unbalanced brackets!\n')
+        self.assertEquals(mem[2], 0, "code should not be marked as ok")
+
     def test_unbalanced_loop(self):
-        pass
+        self._run_and_check_mismatched("[")
+        self._run_and_check_mismatched("+[")
+        self._run_and_check_mismatched("+[-]>[")
+        self._run_and_check_mismatched("+[-]>[+++<.")
+        self._run_and_check_mismatched("+[-]>[+++<.[,,+>]")
+        self._run_and_check_mismatched("+[-]>[+++<.[,,+>]]+]")
+        self._run_and_check_mismatched("]")
+        self._run_and_check_mismatched("]++")
+        self._run_and_check_mismatched("]++[-]")
+        self._run_and_check_mismatched("]++[-]+[")
+        self._run_and_check_mismatched("][")
 
     def test_maximum_loop_depth(self):
         pass
