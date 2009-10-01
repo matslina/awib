@@ -102,15 +102,15 @@ def attach_interpreter(code):
          r'$o0]}+1)%0x100));;"-")OO[$o0]=$(((${OO[$o0]}'
          r'+0377)%0x100));;".")echo -ne "\0$(((${OO[$o0'
          r']}/64)%8))$(((${OO[o0]}/8)%8))$((${OO[o0]}%8'
-         r'))";;",")if ((${#oo}==0)); then read oo;fi;i'
-         r'f ((${#oo}>0)); then OO[$o0]=$(printf "%d" "'
-          '\'${oo:0:1}");oo=${oo:1};fi;;"[")if ((${OO[$'
-         r'o0]}==0));then c=1;while (($c>0));do oO=$(($'
-         r'oO+1));if [ ${O0[$oO]} == \[ ];then c=$((c+1'
-         r'));fi;if [ ${O0[$oO]} == \] ]; then ((c--));'
-         r'fi;done;else O0O[$Oo]=$oO;((Oo++));fi;;"]")('
-         r'(Oo--));if ((${OO[$o0]}!=0)); then oO=$((${O'
-         r'0O[$Oo]}-1));fi;;esac;((oO++));done;')
+         r'))";;",")if ((${#oo}==0)); then oo=$(cat);fi'
+         r';if ((${#oo}>0)); then OO[$o0]=$(printf "%d"'
+          ' "\'${oo:0:1}");oo=${oo:1};fi;;"[")if ((${OO'
+         r'[$o0]}==0));then c=1;while (($c>0));do oO=$('
+         r'($oO+1));if [ ${O0[$oO]} == \[ ];then c=$((c'
+         r'+1));fi;if [ ${O0[$oO]} == \] ]; then ((c--)'
+         r');fi;done;else O0O[$Oo]=$oO;((Oo++));fi;;"]"'
+         r')((Oo--));if ((${OO[$o0]}!=0)); then oO=$(($'
+         r'{O0O[$Oo]}-1));fi;;esac;((oO++));done;')
 
     stuff['bf_code'] = ' \\\n'.join(code)
 
