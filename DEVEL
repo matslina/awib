@@ -83,7 +83,7 @@ Backends can expect the bytecode to be correct, i.e. contain well-matched
 loop instructions. Developer documentation for the individual backends
 can be found in their respective DEVEL files.
 
-Pre-condition:   % 10(0) *(bcode) 0
+Pre-condition:   % 20(0) *(bcode) 0
 Post-condition:  % ::: 0 *0 :::
 
 
