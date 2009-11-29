@@ -24,15 +24,18 @@ and post_P strings. The lang_generic backend provides such a framework.
 ## Language definition
 
 A language definition is simply a piece of brainfuck code capable of printing
-each of the constant code blocks. When run, it is passed an integer S which
-indicates which block to output. Table 1 lists the values of S and what
+each of the constant code blocks. When run, it is passed an integer S that
+indicates which code block to output. Table 1 lists the values of S and what
 outputs they trigger.
 
+The language definition is also passed a 16 bit integer Dd = D*256+d that
+indicates the current loop depth. Dd is intended to allow code indentation.
+
 The precondition for a language definition is:
-% 7(0) *S (important stuff)
+% (stuff) *D d 7(0) S (stuff)
 
 Postcondition is:
-% 7(0) *0 (important stuff)
+% (stuff) *0 9(0) (stuff)
 
  +-----+--------------+
  |  S  | Output       |
