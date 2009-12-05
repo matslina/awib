@@ -8,15 +8,17 @@
 
 // If bytecode is OK then run backend T on bytecode
 
->[<<[-[-[-[-[[-]>>-<<]
+>[<<[-[-[-[-[-[[-]>>-<<]
+             >>[-<+++++>]<<]
            >>[-<++++>]<<]
          >>[-<+++>]<<]
 
-% 20(0) *0 t 0 (code) 0 M m   (where t = (T in {3 4} ? T : 0))
+% 20(0) *0 t 0 (code) 0 M m   (where t = (T in {3 4 5} ? T : 0))
 
 >[[->+<]>>
 % 22(0) T *(code) 0 M m
-// T=4: lang_python
+// T=5: lang_python
+// T=4: lang_go
 // T=3: lang_dummy
 
 #include(lang_generic/backend.b)

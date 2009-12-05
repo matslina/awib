@@ -16,12 +16,18 @@
 
 # run language definition according to T with S=P
 % 1 *T T D d D d 7(0) P P 0 Q (code)
----[-[<->++++[-]]
+---[-[-[<->++++[-]]
 
 <[->>>>>
-# T=4: lang_java
+# T=5: lang_python
 % (stuff) *D d 7(0) S (stuff)
-#include(java.b)
+#include(python.b)
+<<<<<]>]
+
+<[->>>>>
+# T=4: lang_go
+% (stuff) *D d 7(0) S (stuff)
+#include(dummy.b)
 <<<<<]>]
 
 <[->>>>>
