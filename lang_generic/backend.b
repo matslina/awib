@@ -27,7 +27,7 @@
 <[->>>>>
 # T=4: lang_go
 % (stuff) *D d 7(0) S (stuff)
-#include(dummy.b)
+#include(go.b)
 <<<<<]>]
 
 <[->>>>>
