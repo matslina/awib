@@ -1,9 +1,89 @@
 == About
 
-Also Written In Brainfuck (awib) is an optimizing brainfuck
-compiler, 100% written in brainfuck. Awib reads brainfuck source
-code as input and writes compiled programs as output. Awib is
-a cross-compiler with several different target platforms available.
+Awib is a brainfuck compiler written in brainfuck.
+
+It is optimizing, portable and supports multiple target
+platforms. Feed awib brainfuck source code as input and a compiled
+program will be written as output.
+
+The recursive acronym awib stands for "Awib's Written In Brainfuck".
+
+
+== Usage
+
+Run awib in your brainfuck environment of choice. Feed brainfuck
+source code to awib as input and the compiled program will be
+written as output.
+
+Awib is a cross-compiler. The supported target platforms are
+listed in table 1. By default, the target "lang_c" is chosen.
+
+To specify a target platform, insert a line on the form "@TARGET"
+(without the quotation marks and with "TARGET" suitably replaced)
+at the very beginning of the source code you wish to compile.
+Awib will then produce output accordingly.
+
+Due to limitations inherent in Java and CPython, the support for the
+Java and Python programming languages is only partial. While many
+programs will run smoothly, especially large and/or complex programs
+may fail. Awib itself, for instance, will not run properly when
+compiled for these platforms.
+
+ +----------------+--------------------------------------------+
+ |   TARGET       |   Description                              |
+ +----------------+--------------------------------------------+
+ | 386_linux      | Linux on i386                              |
+ +----------------+--------------------------------------------+
+ | lang_c         | C programming language                     |
+ +----------------+--------------------------------------------+
+ | lang_ruby      | Ruby programming language                  |
+ +----------------+--------------------------------------------+
+ | lang_go        | Go programming language                    |
+ +----------------+--------------------------------------------+
+ ( lang_java      | Java programming language                  )
+ +----------------+--------------------------------------------+
+ ( lang_python    | Python programming language                )
+ +----------------+--------------------------------------------+
+       Table 1 - Available target platforms
+
+For instance, the following input would produce an executable hello
+world-program for Linux:
+
+  @386_linux
+  ++++++[->++++++++++++<]>.----[--<+++>]<-.+++++++..+++.[--->+<]>-----.--
+  -[-<+++>]<.---[--->++++<]>-.+++.------.--------.-[---<+>]<.[--->+<]>-.
+
+The following would produce a hello world-program in Ruby:
+
+  @lang_ruby
+  ++++++[->++++++++++++<]>.----[--<+++>]<-.+++++++..+++.[--->+<]>-----.--
+  -[-<+++>]<.---[--->++++<]>-.+++.------.--------.-[---<+>]<.[--->+<]>-.
+
+And this would give you the hello world-program in C:
+
+  @lang_c
+  ++++++[->++++++++++++<]>.----[--<+++>]<-.+++++++..+++.[--->+<]>-----.--
+  -[-<+++>]<.---[--->++++<]>-.+++.------.--------.-[---<+>]<.[--->+<]>-.
+
+
+== Optimizations
+
+Awib is an optimizing compiler:
+
+ o) Sequences of '-','>','<' and '+' are contracted into single
+    instructions. E.g. "----" is replaced with a single SUB(4).
+
+ o) Mutually cancelling instructions are reduced. E.g. "+++-->><"
+    is equivalent to "+>" and is compiled accordingly.
+
+ o) Some common constructs are identified and replaced with single
+    instructions. E.g. "[-]" is compiled into a single CLEAR-
+    instruction.
+
+ o) Loops known to never be entered are removed. This is the case
+    for loops opened at the very beginning of a program (when all
+    cells are 0) and loops opened immediately after the closing
+    of another loop.
 
 
 == Requirements
@@ -35,49 +115,6 @@ Code compiled with awib will execute in an environment where:
       direction, results in undefined behaviour.
 
 
-== Usage
-
-Run awib in your brainfuck environment of choice. Feed brainfuck
-source code to awib as input and the compiled program will be
-written as output.
-
-Awib is a cross-compiler. The supported target platforms are
-listed in table 1. By default, the target "lang_c" is chosen.
-
-To specify a target platform, insert a line on the form "@TARGET"
-(without the quotation marks and with "TARGET" suitably replaced)
-at the very beginning of the source code you wish to compile.
-Awib will then produce output accordingly.
-
- +----------------+--------------------------------------------+
- |   TARGET       |   Description                              |
- +----------------+--------------------------------------------+
- | 386_linux      | Linux on i386                              |
- +----------------+--------------------------------------------+
- | lang_c         | C programming language                     |
- +----------------+--------------------------------------------+
-       Table 1 - Available target platforms
-
-
-== Optimizations
-
-Awib is an optimizing compiler:
-
- o) Sequences of '-','>','<' and '+' are contracted into single
-    instructions. E.g. "----" is replaced with a single ADD(4).
-
- o) Mutually cancelling instructions are reduced. E.g. "+++-->><"
-    is equivalent to "+>" and is compiled accordingly.
-
- o) Some common constructs are identified and replaced with single
-    instructions. E.g. "[-]" is compiled into a single CLEAR-
-    instruction.
-
- o) Loops known to never be entered are removed. This is the case
-    for loops opened at the very beginning of a program (when all
-    cells are 0) and loops opened immediately after the closing
-    of another loop.
-
 == License
 
     This program is free software: you can redistribute it and/or modify
@@ -93,5 +130,5 @@ Awib is an optimizing compiler:
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Mats Linander 2008-11-01
+Mats Linander 2009-12-23
 matslina (at) gmail (d0t) com
