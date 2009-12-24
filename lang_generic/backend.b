@@ -16,7 +16,13 @@
 
 # run language definition according to T with S=P
 % 1 *T T D d D d 7(0) P P 0 Q (code)
----[-[-[<->++++[-]]
+---[-[-[-[<->++++[-]]
+
+<[->>>>>
+# T=6: lang_ruby
+% (stuff) *D d 7(0) S (stuff)
+#include(ruby.b)
+<<<<<]>]
 
 <[->>>>>
 # T=5: lang_python
