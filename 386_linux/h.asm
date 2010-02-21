@@ -1,6 +1,7 @@
 ;;; This file holds the asm-stuff for the awib i386-backend
 ;;; Compile with 'nasm -f bin h.asm'
 ;;;
+;;; 2010-02-22  Load at standard address. 32 bit relative jumps for loops.
 ;;; 2007-10-26  Made jump from CLOSE conditional for performance reasons
 ;;; 2007-08-25  Modifications for the new awib rewrite
 ;;; Mats Linander - 2003-04-27
@@ -8,6 +9,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 USE32				; 32 bit mode (nasm defaults to 16 on -f bin)
+	org	0x8048000
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ELF header starts here
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -41,12 +43,12 @@ ELFsize	equ	ELF_end-ELF_start ; size of elf header
 p_hdr_start:
 	dd	1		; this header specifies a loadable segment
 	dd	0		; offset to segment
-	dd	0		; segment virtual address (don't care)
-	dd	0		; physical address (don't care)
+	dd	ELF_start	; segment virtual address
+	dd	ELF_start	; physical address
 	dd	fsize		; size of file
 	dd	fsize		; required memory
-	dd	4|2|1		; segment flags, 1=exec 2=write 4=read
-	dd	0		; alignment something
+	dd	4|1		; segment flags, 1=exec 2=write 4=read
+	dd	0x1000		; alignment
 p_hdr_end:
 phdrsize: equ	p_hdr_end-p_hdr_start ; size of program header
 phdroffset: equ	p_hdr_start-ELF_start ; offset to program header
@@ -143,13 +145,14 @@ code_start:
 
 ;;; OPEN
 	cmp	bh,[ecx]
-	je	near word $+12	; jump past CLOSE if *p==0
+	je	near $+12	; jump past CLOSE if *p==0
 
 ;;; CLOSE
 	cmp	bh,[ecx]
-	jne	near word $-2 	; jump to start of loop body if *p!=0
+	jne	near $-2 	; jump to start of loop body if *p!=0
 
 over:
+
 ;;; Here's the final syscall for exit(0)
 	mov	eax,ebx
 	dec	ebx
