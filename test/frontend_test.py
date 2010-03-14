@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import os
+
 import ir
 import common
 import awip
@@ -13,8 +15,8 @@ _LANG_C = 2
 
 class FrontendTest(common.BFTestCase):
 
-    def setUp(self):
-        self.code = open(frontend_path).read()
+    code = open(os.path.join(os.path.dirname(__file__),
+                             '..', frontend_path)).read()
 
     def _check_post_condition(self, mem, code, target=None, maxdepth=None):
         """Checks frontend post execution memory against expected ir code."""
