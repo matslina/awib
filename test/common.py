@@ -16,7 +16,7 @@ class BFTestCase(unittest.TestCase):
         self.__code = None
 
     def run_bf(self, code, input, steps=50000,
-            check_output=True, check_memory=True, precondition=[]):
+            check_output=True, check_memory=True, precondition=[], pointer=0):
         """Runs code with different cell size and eof-behaviour.
 
         @param input: program input
@@ -24,6 +24,7 @@ class BFTestCase(unittest.TestCase):
         @param check_output: assert output is equal regardless of environment
         @param check_memory: assert memory post execution is equal ...
         @param precondition: run program with this initial memory layout
+        @param pointer: run program with this initial pointer position
         @rtype: ([], [])
         @return: program output and memory post execution as: (output, memory)
         """
@@ -45,7 +46,8 @@ class BFTestCase(unittest.TestCase):
                                                      memory=precondition,
                                                      cell_size=cell_size,
                                                      eof_behaviour=eof__code,
-                                                     steps=steps)
+                                                     steps=steps,
+                                                     pointer=pointer)
                 except AWIPStepError:
                     self.fail("code didn't terminate within %d steps for "
                               "(%d bits, %s)" %

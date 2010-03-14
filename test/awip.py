@@ -94,7 +94,7 @@ class AWIP:
 
         code, i = self.code, 0
         while i < len(code):
-            if code[i][0] == OPEN and (i==0 or code[i-1][0] == CLOSE):
+            if code[i][0] == OPEN and i > 0 and code[i-1][0] == CLOSE:
                 code[i], depth, i = (NOP, 0), 1, i+1
                 while depth:
                     if code[i][0] == OPEN:
@@ -173,7 +173,7 @@ class AWIP:
         return ["%s(%d)" % (ir_to_str[op], arg) for op,arg in self.code]
 
     def run(self, cell_size=8, eof_behaviour=EOF_NO_CHANGE, steps=None,
-            memory_limit=None, memory="",
+            memory_limit=None, memory="", pointer=0,
             input='', input_file=None, output_file=None):
         """Runs code.
 
@@ -187,6 +187,8 @@ class AWIP:
         @param memory_limit: restricts memory area to memory_limit cells
         @type memory: iterable
         @param memory: data to initalize memory area with instead of zeroes
+        @type pointer: int
+        @param pointer: initial pointer position
         @type input: str
         @param input: block of data to feed as input
         @type input_file: file-like object
@@ -202,11 +204,8 @@ class AWIP:
         code, codelen = self.code, len(self.code)
         input = list(input)
         output = []
-        ip, p = 0, 0
+        ip, p = 0, pointer
         opcount = 0
-
-        import time
-        start = time.time()
 
         while ip < codelen:
             op, arg = code[ip]
