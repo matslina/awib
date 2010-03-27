@@ -62,7 +62,7 @@ class BackendTestCase(common.BFTestCase):
         precond.extend(ord(c) for c in (''.join(str(op) for op in code)))
         precond.extend([0, max_depth/256, max_depth%256])
         out, _ = self.run_bf(self.code, [], precondition=precond,
-                             pointer=23, steps=5000000)
+                             pointer=23, steps=500000000)
 
         # write backend output to disk
         tmpd = tempfile.mkdtemp("awib_%s" % self.__class__.__name__.lower())
@@ -83,6 +83,9 @@ class BackendTestCase(common.BFTestCase):
             self.assertEquals(o, e, "outputs differ at position %d: "
                               "expected %d, got %d" % (i, e, o))
         self.assertEquals(len(prog_out), len(expected_output))
+
+    def test_empty_program(self):
+        self.run_ir([],[],[])
 
     def test_basic_operations(self):
         # ,[->>++++++++<<]>>.[-].
@@ -127,11 +130,30 @@ class BackendTestCase(common.BFTestCase):
                      ir.OUTPUT(), ir.LEFT(1), ir.OUTPUT()],
                     [], [0, 2])
 
-    def test_eof(self):
+    def test_eof_behaviour(self):
         # do no-change on EOF
         # ++++++++++,.
         self.run_ir([ir.ADD(10), ir.INPUT(), ir.OUTPUT()],
                     [], [10])
+
+    def test_cells_wrap(self):
+        # .-.++.+{254}.+.-.
+        self.run_ir([ir.OUTPUT(),
+                     ir.SUB(1), ir.OUTPUT(),
+                     ir.ADD(2), ir.OUTPUT(),
+                     ir.ADD(254), ir.OUTPUT(),
+                     ir.ADD(1), ir.OUTPUT(),
+                     ir.SUB(1), ir.OUTPUT()],
+                    [], [0, 255, 1, 255, 0, 255])
+
+    def test_deep_nested_loops(self):
+        # +[{300}-(>+.<]){300}
+        self.run_ir([ir.ADD(1)] +
+                    ([ir.OPEN()] * 300) +
+                    [ir.SUB(1)] +
+                    ([ir.RIGHT(1), ir.ADD(1), ir.OUTPUT(),
+                      ir.LEFT(1), ir.CLOSE()] * 300),
+                    [], range(1,256) + range(300-255))
 
 
 if __name__ == "__main__":
