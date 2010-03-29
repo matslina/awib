@@ -6,6 +6,7 @@ import backend
 
 class LinuxTestCase(backend.BackendTestCase):
     BACKEND_PATH = "lang_c/backend.b"
+    BACKEND_INDEX = 2
 
     def run_program(self, path, input):
         os.rename(path, path + ".c")

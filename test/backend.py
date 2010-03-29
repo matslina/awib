@@ -5,6 +5,7 @@ import shutil
 import os
 import shutil
 import tempfile
+import re
 
 import ir
 import common
@@ -22,6 +23,7 @@ class BackendTestCase(common.BFTestCase):
     """
 
     BACKEND_PATH = NotImplementedError()
+    BACKEND_INDEX = NotImplementedError()
 
     def __init__(self, *args, **kwargs):
         common.BFTestCase.__init__(self, *args, **kwargs)
@@ -59,10 +61,11 @@ class BackendTestCase(common.BFTestCase):
 
         # set up the precondition and execute the backend
         precond = [0] * 23
+        precond.append(self.BACKEND_INDEX)
         precond.extend(ord(c) for c in (''.join(str(op) for op in code)))
         precond.extend([0, max_depth/256, max_depth%256])
         out, _ = self.run_bf(self.code, [], precondition=precond,
-                             pointer=23, steps=500000000)
+                             pointer=23, steps=5000000)
 
         # write backend output to disk
         tmpd = tempfile.mkdtemp("awib_%s" % self.__class__.__name__.lower())
@@ -154,6 +157,30 @@ class BackendTestCase(common.BFTestCase):
                     ([ir.RIGHT(1), ir.ADD(1), ir.OUTPUT(),
                       ir.LEFT(1), ir.CLOSE()] * 300),
                     [], range(1,256) + range(300-255))
+
+
+class LangGenericTestCase(BackendTestCase):
+    BACKEND_PATH = "lang_generic/backend.b"
+    BACKEND_INDEX = NotImplementedError()
+
+    include_re = re.compile(r'#include\((.*)\)')
+
+    def __init__(self, *args, **kwargs):
+        BackendTestCase.__init__(self, *args, **kwargs)
+
+        dir = os.path.join(os.path.dirname(__file__), '..',
+                           os.path.dirname(self.BACKEND_PATH))
+
+        code = []
+        for line in self.code.split('\n'):
+            m = self.include_re.match(line)
+            if m:
+                line = open(os.path.join(dir, m.group(1))).read()
+            code.append(line)
+
+        self.code = ''.join(code)
+        import sys
+        sys.stderr.write("CODE_START\n\n%sCODE END\n\n"%self.code)
 
 
 if __name__ == "__main__":

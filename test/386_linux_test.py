@@ -5,6 +5,7 @@ import backend
 
 class LinuxTestCase(backend.BackendTestCase):
     BACKEND_PATH = "386_linux/backend.b"
+    BACKEND_INDEX = 1
 
     def run_program(self, path, input):
         subprocess.call(['chmod', '+x', path])
