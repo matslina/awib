@@ -2,8 +2,8 @@
 # Please refer to the documentation in the full source code distribution
 # of awib for additional details
 
-% 10(0) *(code) 0 M m
-<<<<<<<<<++++++++++++++++++++[->+++>++>+++++>+++++>++++++<<<<<]
+% 10(0) *2 (code) 0 M m
+--<<<<<<<<++++++++++++++++++++[->+++>++>+++++>+++++>++++++<<<<<]
 ++++++++++>>----->>++++++++++<<
 % 10 60 *35 100 110 120 0 0 0 (code) 0 M m
 

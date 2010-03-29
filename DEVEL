@@ -72,6 +72,10 @@ The target platform is indicated by its backend index, as given in table 1.
  +----------------------+------------------+
  | lang_c               | 2                |
  +----------------------+------------------+
+ | lang_go              | 4                |
+ +----------------------+------------------+
+ | lang_ruby            | 6                |
+ +----------------------+------------------+
    Table 1 - Targets and backend indices
 
 For additional details, have a look at the commented frontend source code.
@@ -83,7 +87,8 @@ Backends can expect the bytecode to be correct, i.e. contain well-matched
 loop instructions. Developer documentation for the individual backends
 can be found in their respective DEVEL files.
 
-Pre-condition:   % 20(0) *(bcode) 0
+Pre-condition:   % 20(0) *T (bcode) 0
+                 % where T is the backend index
 Post-condition:  % ::: 0 *0 :::
 
 

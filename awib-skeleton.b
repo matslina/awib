@@ -28,18 +28,19 @@
 % ::: 0 0 *0 0 0
 ]<
 
->>[->
+>>[+
 // T=2: lang_c
-% 23(0) *(code) 0 M m
+
+% 23(0) *T (code) 0 M m
 
 #include(lang_c/backend.b)
 
 % ::: 0 0 *0 0 0
 <]<<]
 
->>[->
+>>[
 // T=1: 386_linux
-% 23(0) *(bcode) 0 M m
+% 23(0) *T (bcode) 0 M m
 
 #include(386_linux/backend.b)
 

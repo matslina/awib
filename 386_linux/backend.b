@@ -6,10 +6,10 @@
 ## Calculating jump offsets
 ##
 
-% 5(0) *(bcode) 0 M m     (where 16b integer Mm = maximum loop depth of bcode)
+% 5(0) *1 (bcode) 0 M m     (where 16b integer Mm = maximum loop depth of bcode)
 # Build stack of depth Mm plus 2
 # To allow simple stack traversal no stack frame may hold 0
-[>>]>[->>+<<]>[->>+<<]>>>+[-<<
+->[>>]>[->>+<<]>[->>+<<]>>>+[-<<
 [->>+<<]+>[->>+<<]+>
 { 16b dec >>+<[>-<[->>+<<]]>>[-<<+>>]<<->
   [-<+<->++++++++[->++++++++<]>[-<++++>]<->]<< }
