@@ -16,8 +16,8 @@
 
 % 20(0) *0 t 0 (code) 0 M m   (where t = (T in {3 4 5 6} ? T : 0))
 
->[[->+<]>>
-% 22(0) T *(code) 0 M m
+>[[->+<]>
+% 22(0) *T (code) 0 M m
 // T=6: lang_ruby
 // T=5: lang_python
 // T=4: lang_go
