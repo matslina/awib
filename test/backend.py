@@ -42,7 +42,7 @@ class BackendTestCase(common.BFTestCase):
 
         raise NotImplementedError()
 
-    def run_ir(self, code, input, expected_output):
+    def run_ir(self, code, input, expected_output, steps=5000000):
         """Compiles and runs code with this backend.
 
         @param code: bytecode to compile
@@ -65,7 +65,7 @@ class BackendTestCase(common.BFTestCase):
         precond.extend(ord(c) for c in (''.join(str(op) for op in code)))
         precond.extend([0, max_depth/256, max_depth%256])
         out, _ = self.run_bf(self.code, [], precondition=precond,
-                             pointer=23, steps=5000000)
+                             pointer=23, steps=steps)
 
         # write backend output to disk
         tmpd = tempfile.mkdtemp("awib_%s" % self.__class__.__name__.lower())
@@ -156,7 +156,8 @@ class BackendTestCase(common.BFTestCase):
                     [ir.SUB(1)] +
                     ([ir.RIGHT(1), ir.ADD(1), ir.OUTPUT(),
                       ir.LEFT(1), ir.CLOSE()] * 300),
-                    [], range(1,256) + range(300-255))
+                    [], range(1,256) + range(300-255),
+                    steps=50000000)
 
 
 class LangGenericTestCase(BackendTestCase):
@@ -179,8 +180,6 @@ class LangGenericTestCase(BackendTestCase):
             code.append(line)
 
         self.code = ''.join(code)
-        import sys
-        sys.stderr.write("CODE_START\n\n%sCODE END\n\n"%self.code)
 
 
 if __name__ == "__main__":
