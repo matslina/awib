@@ -1,8 +1,8 @@
-% 22(0) T *(code) 0 M m
+% 22(0) *T (code) 0 M m
 % where T = target index and Mm = maximum loop depth
 
 # move T; add header and footer codes
-<[-<<<<<<<<<<<<<<<<<+>>>>>>>>>>>>>>>>>]
+[-<<<<<<<<<<<<<<<<<+>>>>>>>>>>>>>>>>>]
 >[>>]>[-]>[-]<++++++++[-<++++>]<[<<]>++++++++[-<++++>]<-
 % T 15(0) *31 0 (code) 32 0
 
