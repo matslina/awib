@@ -13,11 +13,12 @@ Mats Linander - 2007-08-29
 
 ## Generated output
 
-The backend outputs ELF-headers followed by some predetermined machine code
-responsible for memory allocation and other preparations. After this the
-actual compiled awib bytecode follows. As indicated and described by table 1,
-compiling a bytecode operation to i386 asm is a simple matter in most cases,
-the most significant exception being the looping constructs OPEN and CLOSE.
+The backend outputs ELF-headers followed by some machine code
+responsible for memory allocation and other preparations. After this
+the actual compiled awib bytecode follows. As indicated and described
+by table 1, compiling a bytecode operation to i386 asm is a simple
+matter in most cases, the most significant exception being the looping
+constructs OPEN and CLOSE.
 
 ELF-headers, code for memory allocation and preparations and code for
 calling the final sys_exit(0) when terminating, is detailed in the file
@@ -27,7 +28,7 @@ for "h.asm".
  +---------------+-------------------+-------------------------------+
  | Operation     | i386 Asm          | Machine code (hex)            |
  +---------------+-------------------+-------------------------------+
- | ADD(x)    x=1 | inc byte [ecx]    | FE01                          |
+ | ADD(1)        | inc byte [ecx]    | FE01                          |
  +---------------+-------------------+-------------------------------+
  | ADD(x)    x>1 | add byte [ecx],x  | 8001x                         |
  +---------------+-------------------+-------------------------------+
@@ -36,22 +37,22 @@ for "h.asm".
  |               | int 0x80          | CD80                          |
  |               | inc ebx           | 43                            |
  +-------------------------------------------------------------------|
- | SUB(x)    x=1 | dec byte [ecx]    | FE09                          |
+ | SUB(1)        | dec byte [ecx]    | FE09                          |
  +---------------+-------------------+-------------------------------+
  | SUB(x)    x>1 | sub byte [ecx],x  | 8029x                         |
  +---------------+-------------------+-------------------------------+
  | OUTPUT        | mov eax,esi       | 89F0                          |
  |               | int 0x80          | CD80                          |
  +---------------+-------------------+-------------------------------+
- | LEFT(x)   x=1 | dec ecx           | 49                            |
+ | LEFT(1)       | dec ecx           | 49                            |
  +---------------+-------------------+-------------------------------+
- | LEFT(x)   x=2 | sub ecx,ebp       | 29E9                          |
+ | LEFT(2)       | sub ecx,ebp       | 29E9                          |
  +---------------+-------------------+-------------------------------+
  | LEFT(x)   x>2 | sub ecx,byte x    | 83E9x                         |
  +---------------+-------------------+-------------------------------+
- | RIGHT(x)  x=1 | inc ecx           | 41                            |
+ | RIGHT(1)      | inc ecx           | 41                            |
  +---------------+-------------------+-------------------------------+
- | RIGHT(x)  x=2 | add ecx,ebp       | 01E9                          |
+ | RIGHT(2)      | add ecx,ebp       | 01E9                          |
  +---------------+-------------------+-------------------------------+
  | RIGHT(x)  x>2 | add ecx,byte x    | 83C1x                         |
  +---------------+-------------------+-------------------------------+

@@ -1,19 +1,17 @@
-== About
-
 Awib is a brainfuck compiler written in brainfuck.
 
-It is optimizing, portable and supports multiple target
-platforms. Feed awib brainfuck source code as input and a compiled
-program will be written as output.
+Notable features are code optimization, portability and support for
+multiple target platforms.
 
-The recursive acronym awib stands for "Awib's Written In Brainfuck".
+As of version 0.2, awib is a 3-language polyglot; in addition to being
+fully functional brainfuck, it is also compileable C and executable
+bash script.
 
 
 == Usage
 
-Run awib in your brainfuck environment of choice. Feed brainfuck
-source code to awib as input and the compiled program will be
-written as output.
+Feed awib brainfuck source code as input and the compiled program
+will be written as output.
 
 Awib is a cross-compiler. The supported target platforms are
 listed in table 1. By default, the target "lang_c" is chosen.
@@ -22,12 +20,6 @@ To specify a target platform, insert a line on the form "@TARGET"
 (without the quotation marks and with "TARGET" suitably replaced)
 at the very beginning of the source code you wish to compile.
 Awib will then produce output accordingly.
-
-Due to limitations inherent in Java and CPython, the support for the
-Java and Python programming languages is only partial. While many
-programs will run smoothly, especially large and/or complex programs
-may fail. Awib itself, for instance, will not run properly when
-compiled for these platforms.
 
  +----------------+--------------------------------------------+
  |   TARGET       |   Description                              |
@@ -39,10 +31,6 @@ compiled for these platforms.
  | lang_ruby      | Ruby programming language                  |
  +----------------+--------------------------------------------+
  | lang_go        | Go programming language                    |
- +----------------+--------------------------------------------+
- ( lang_java      | Java programming language                  )
- +----------------+--------------------------------------------+
- ( lang_python    | Python programming language                )
  +----------------+--------------------------------------------+
        Table 1 - Available target platforms
 
@@ -130,5 +118,5 @@ Code compiled with awib will execute in an environment where:
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Mats Linander 2009-12-23
+Mats Linander 2010-04-04
 matslina (at) gmail (d0t) com
