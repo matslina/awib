@@ -2,7 +2,7 @@
 
 set -e
 
-ALL_TARGETS="lang_c 386_linux lang_ruby"
+ALL_TARGETS="lang_c 386_linux lang_ruby lang_go"
 ALL_TEST_CASES=$(ls -1 *.b | cut -f1 -d.|xargs)
 AWIB_BUILD="../awib.b"
 ALL_METHODS="bfint gcc bash"
@@ -152,8 +152,8 @@ function compile {
 
 	lang_go)
 	    mv $out $out.go
-	    8g -o $out.8 $out.go >/dev/null
-	    8l -o $out $out.8 >/dev/null
+	    8g -o $out.8 $out.go
+	    8l -o $out $out.8
 	    ;;
 
     esac
@@ -184,4 +184,4 @@ for method in $methods; do
 	done
     done
 done
-echo -ne "$(date +%y%m%d_%k%M%S): all good in the hood"
+echo "$(date +%y%m%d_%k%M%S): all good in the hood"
