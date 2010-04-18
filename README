@@ -1,7 +1,10 @@
-Awib is a brainfuck compiler written in brainfuck.
+awib-0.2
 
-Notable features are code optimization, portability and support for
-multiple target platforms.
+Awib's Written In Brainfuck (awib) is a brainfuck compiler written in
+brainfuck.
+
+Notable features: optimization, portability and support for multiple
+target platforms.
 
 As of version 0.2, awib is a 3-language polyglot; in addition to being
 fully functional brainfuck, it is also compileable C and executable
@@ -86,6 +89,19 @@ Awib will run smoothly in any brainfuck environment where:
 
 The vast majority of brainfuck environments meet these criteria.
 
+Since awib is polyglot, it is also possible to compile and/or run awib
+directly as C or bash. For instance, using gcc, the following will
+build and executable file called awib from awib-0.2.b.
+
+$ cp awib-0.2.b awib-0.2.c
+$ gcc awib-0.2.c -o awib.tmp
+$ ./awib.tmp < awib-0.2.b > awib-0.2.c
+$ gcc -O2 awib-0.2.c -o awib
+
+Using bash works fine, but is very very very slow:
+
+$ (echo "@386_linux"; cat awib.b) | bash awib.b > awib
+$ chmod +x awib
 
 == Environment
 
