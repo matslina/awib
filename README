@@ -91,7 +91,7 @@ The vast majority of brainfuck environments meet these criteria.
 
 Since awib is polyglot, it is also possible to compile and/or run awib
 directly as C or bash. For instance, using gcc, the following will
-build and executable file called awib from awib-0.2.b.
+build an executable file called awib from awib-0.2.b.
 
 $ cp awib-0.2.b awib-0.2.c
 $ gcc awib-0.2.c -o awib.tmp
