@@ -4,14 +4,11 @@ import os
 import backend
 
 
-class GoTest(backend.LangGenericTestCase):
-    BACKEND_INDEX = 4
+class TclTest(backend.LangGenericTestCase):
+    BACKEND_INDEX = 7
 
     def run_program(self, path, input):
-        os.rename(path, path + ".go")
-        subprocess.call(["8g", "-o", path + ".8", path + ".go"])
-        subprocess.call(["8l", "-o", path, path + ".8"])
-        p = subprocess.Popen([path],
+        p = subprocess.Popen(['/usr/bin/tclsh',path],
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE)
         stdout, stderr = p.communicate(input)

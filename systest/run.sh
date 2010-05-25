@@ -2,7 +2,7 @@
 
 set -e
 
-ALL_TARGETS="lang_c 386_linux lang_ruby lang_go"
+ALL_TARGETS="lang_c 386_linux lang_ruby lang_go lang_tcl"
 ALL_TEST_CASES=$(ls -1 *.b | cut -f1 -d.|xargs)
 AWIB_BUILD="../awib.b"
 ALL_METHODS="bfint gcc bash"
@@ -156,6 +156,9 @@ function compile {
 	    8l -o $out $out.8
 	    ;;
 
+	lang_tcl)
+	    chmod +x $out
+	    ;;
     esac
 
     return 0

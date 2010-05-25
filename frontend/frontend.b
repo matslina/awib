@@ -44,10 +44,19 @@
 # and overwrite the target index T accordingly
 # we take care not to overwrite the last read X as it may be bf and should
 # be passed on to the bytecode compiler below
-<<<<+[->+<]>[-<<[<]<<<+>>>>[>]>]++++++++++++++++++++>>>>[-<<<<->>>>]<<<++++++
+<<<<+[->+<]>[-<<[<]<<<+>>>>[>]>]++++++++++++++++++++>>>>[-<<<<->>>>]<<<+++++++
 <<<[<]<<<->>>>[>]>>
-% T X 0 0 0 (target) 0 s *6 0 0   (where s = strlen(target))
-[[->+>+<<]>[-<+>]+>-[-[-[-[-[-[<->[-]]
+% T X 0 0 0 (target) 0 s *7 0 0   (where s = strlen(target))
+[[->+>+<<]>[-<+>]+>-[-[-[-[-[-[-[<->[-]]
+
+<[-
+# build target string for backend index 7
+% T X 0 0 0 (target) 0 s 7 *0 0
+>+++++++++[->+>++++++++++++<<]>->[->+>+>+>+>+>+>+>+<<<<<<<<]>>----------->++
+>----->------------->++++++++>---------
+<<<<<<<<<<
+% T X 0 0 0 (target) 0 s 7 *0 0 8 0 "lang_tcl" 0
+]>]
 
 <[-
 # build target string for backend index 6
