@@ -66,8 +66,7 @@ INT_BASH = \
      r')((Oo--));if ((${OO[$o0]}!=0)); then oO=$(($'
      r'{O0O[$Oo]}-1));fi;;esac;((oO++));done;')
 
-INT_TCL = """
-fconfigure stdout -encoding binary
+INT_TCL = """fconfigure stdout -encoding binary
 fconfigure stdin -encoding binary
 set p 0
 set ip 0
@@ -112,8 +111,7 @@ while {$ip < [string length $K]} {
 	default {}
     }
     incr ip
-}
-"""
+}"""
 
 POLYGLOT = """#define EOF char* /* !\\
 cat >>/dev/null <<EOF
@@ -129,12 +127,11 @@ cat >>/dev/null <<EoF
 */
 #else
 %(c_interpreter)s
-/*]*/
 #endif
 #define EoF
 #if 0
-[
-}
+]}
+#[
 %(tcl_interpreter)s
 exit
 ]
