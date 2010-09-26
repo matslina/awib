@@ -5,7 +5,7 @@ set -e
 ALL_TARGETS="lang_c 386_linux lang_ruby lang_go lang_tcl"
 ALL_TEST_CASES=$(ls -1 *.b | cut -f1 -d.|xargs)
 AWIB_BUILD="../awib.b"
-ALL_METHODS="bfint gcc bash"
+ALL_METHODS="bfint gcc bash tclsh"
 
 BFINT_DIR="../util"
 BUILD_DIR=".build"
@@ -132,6 +132,11 @@ function compile {
 	bash)
 	    (echo "@$target"; cat ${testcase}.b) |
 	    bash $awib_build > $out
+	    ;;
+
+	tclsh)
+	    (echo "@$target"; cat ${testcase}.b) |
+	    tclsh $awib_build > $out
 	    ;;
     esac
 
