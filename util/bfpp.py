@@ -34,84 +34,43 @@ include_re = re.compile(r'\s*#include\(([^)]+)\)')
 
 BFIS = set([',','.','-','+','[',']','<','>'])
 
-INT_C = ("#define _K_(___,_K,__)(K[_KK]^(___))?_K_^_K_:"
-         "_K _K_ __;\n_K_,_KK,__K,____,__[4>>002<<020];"
-         "_(__){__K=____?__K:__;____=__;while(__K){__K+"
-         "=*(__*__*__+_KK+K)-0133?22^_KK[K+__]^'K'?'.'^"
-         "'u'^'[':-(__[_KK+K]&1):__*__;_KK+=__;_(__);}}"
-         "___(){while(K[++_KK]){    _K_('v'^']',__[,]++"
-         ")_K_(055|___==___,__[,]--)_K_('K'^'u',,++)_K_"
-         "('w'^'K',--,)_K_('_'^4,__[,]?_(_KK[K]&1>>1):_"
-         "(_KK[K]&1))_K_('v'^'+',__[,]?_((_KK[K]&2)-(_K"
-         "K[K]&1)):_(0))K[_KK]-46?_(__[_K_]&1>>1):putch"
-         "ar(__[_K_]);if(_KK[K]^(1<<1^'.'))_(0);else{__"
-         "[_K_]=getchar();}}}main(){--_KK;___();}")
+INT_C = \
+    [r"#define _K_(___,_K,__)(K[_KK]^(___))?_K_^_K_:_K _K_ __;",
+     r"_K_,_KK,__K,____,__[4>>002<<020]; _(__){__K=____?__K:__;____=__;while(",
+     r"__K){__K+=*(__*__*__+_KK+K)-0133?22^_KK[K+__]^'K'?'.'^'u'^'[':-(__[_KK",
+     r"+K]&1):__*__;_KK+=__;_(__);}}___(){while(K[++_KK]){    _K_('v'^']',__[",
+     r",]++)_K_(055|___==___,__[,]--)_K_('K'^'u',,++)_K_('w'^'K',--,)_K_('_'^",
+     r"4,__[,]?_(_KK[K]&1>>1):_(_KK[K]&1))_K_('v'^'+',__[,]?_((_KK[K]&2)-(_KK",
+     r"[K]&1)):_(0))K[_KK]-46?_(__[_K_]&1>>1):putchar(__[_K_]);if(_KK[K]^(1<<",
+     r"1^'.'))_(0);else{__[_K_]=getchar();}}}main(){--_KK;___();}"]
 
 INT_BASH = \
-    (r'O0=($(echo  "$K"|sed -e"s/\(.\)/\\1 /g"));OO'
-     r'=($(for ((i=0;i<65535;i++));do echo "0";done'
-     r'));Oo=0;oo="";oO=0;o0=0;while [ $oO -lt ${#O'
-     r'0[@]} ]; do case ${O0[$oO]} in ">")o0=$((o0+'
-     r'1));;"<")o0=$((o0-1));;"+")OO[$o0]=$(((${OO['
-     r'$o0]}+1)%0x100));;"-")OO[$o0]=$(((${OO[$o0]}'
-     r'+0377)%0x100));;".")echo -ne "\0$(((${OO[$o0'
-     r']}/64)%8))$(((${OO[o0]}/8)%8))$((${OO[o0]}%8'
-     r'))";;",")if ((${#oo}==0)); then oo=$(cat);fi'
-     r';if ((${#oo}>0)); then OO[$o0]=$(printf "%d"'
-      ' "\'${oo:0:1}");oo=${oo:1};fi;;"[")if ((${OO'
-     r'[$o0]}==0));then c=1;while (($c>0));do oO=$('
-     r'($oO+1));if [ ${O0[$oO]} == \[ ];then c=$((c'
-     r'+1));fi;if [ ${O0[$oO]} == \] ]; then ((c--)'
-     r');fi;done;else O0O[$Oo]=$oO;((Oo++));fi;;"]"'
-     r')((Oo--));if ((${OO[$o0]}!=0)); then oO=$(($'
-     r'{O0O[$Oo]}-1));fi;;esac;((oO++));done;')
+    [r'O0=($(echo "$KK"|sed -e"s/\(.\)/\\1 /g"));OO=($(for((i=0;i<65535;i++))',
+     r'do echo "0";done));Oo=0;oo="";oO=0;o0=0;while [ $oO -lt ${#O0[@]} ];do',
+     r'case ${O0[$oO]} in ">")o0=$((o0+1));;"<")o0=$((o0-1));;"+")OO[$o0]=$((',
+     r'(${OO[$o0]}+1)%0x100));;"-")OO[$o0]=$(((${OO[$o0]}+0377)%0x100));;".")',
+     r'echo -ne "\0$(((${OO[$o0]}/64)%8))""$(((${OO[o0]}/8)%8))$((${OO[o0]}%8',
+     r'))";;",")if ((${#oo}==0)); then oo=$(cat);fi;if ((${#oo}>0)); then OO[',
+     '$o0]=$(printf "%d" "\'${oo:0:1}");oo=${oo:1};fi;;"[")if ((${OO[$o0]}==0',
+     r'));then c=1;while (($c>0));do oO=$(($oO+1));if [  ${O0[$oO]} == \[ ] ;',
+     r'then c=$((c+1));fi;if [ ${O0[$oO]} == \] ]; then ((c-- ));fi;done;else',
+     r'O0O[$Oo]=$oO;((Oo++)); fi;;"]")((Oo--));if ((${OO[$o0]})); then oO=$((',
+     r'${O0O[$Oo]}-1));fi;;esac;((oO++));done;']
 
-INT_TCL = """fconfigure stdout -encoding binary
-fconfigure stdin -encoding binary
-set p 0
-set ip 0
-set mem {0}
-for {set i 0} {$i<0xffff} {incr i} {lappend mem 0}
-lappend stack 0
-while {$ip < [string length $K]} {
-    switch -exact -- [string index $K $ip] {
-	">" {incr p}
-	"<" {set p [expr $p-1]}
-	"," {
-	    set c [read stdin 1]
-	    if {[string length $c]==1} {
-		lset mem $p [scan $c %c]
-	    }
-	}
-	"." {puts -nonewline stdout [format %c [lindex $mem $p]]}
-	"[" {
-	    if {[lindex $mem $p] == 0} {
-		set depth 1
-		while {$depth != 0} {
-		    incr ip
-		    set c [string index $K $ip]
-		    if {[string equal $c {[} ]} {
-			incr depth
-		    } elseif {[string equal $c {]}]} {
-			set depth [expr $depth-1]
-		    }
-		}
-	    } else {
-		lappend stack [expr $ip - 1]
-	    }
-	}
-	"]" {
-	    if {[lindex $mem $p] != 0} {
-		set ip [lindex $stack end]
-	    }
-	    set stack [lrange $stack 0 end-1]
-	}
-	"+" {lset mem $p [expr ([lindex $mem $p] + 1)%256]}
-	"-" {lset mem $p [expr ([lindex $mem $p] - 1)%256]}
-	default {}
-    }
-    incr ip
-}"""
+INT_TCL = \
+    [r"fconfigure stdout -encoding binary;fconfigure stdin -encoding binary;set __ 0",
+     r"set _ 0;set _1 {0};;for {set ___ 0} {$___<0xffff} {incr ___} {lappend _1 0}",
+     "lappend _1_ 0;;while {$_ < [string length $K]} {switch -exact -- \\",
+     r"[string index $K $_] {{>} {incr __} {<} {set __ [expr $__-1]} {,}",
+     "{set __1 [read stdin 1]; if {[string length $__1]==1} {lset _1 $__ [scan $__1 \\",
+     r"%c]}} {.} {puts -nonewline stdout [format %c [lindex $_1 $__]]}	{[} {",
+     r"if {[lindex $_1 $__] == 0} {set ___ 1; while {$___ != 0} {incr _;",
+     "set __1 [string index $K $_];if {[string equal $__1 {[} ]} {incr ___;} \\",
+     r"elseif {[string equal $__1 {]}]} {set ___ [expr $___-1]}}} else {",
+     r"lappend _1_ [expr $_ - 1]}} {]} {if {[lindex $_1 $__] != 0} {",
+     r"set _ [lindex $_1_ end]};set _1_ [lrange $_1_ 0 end-1]} {+} {",
+     "lset _1 $__ [expr ([lindex $_1 $__] + 1)%256]} {-} {lset _1 $__ [expr \\",
+     r"([lindex $_1 $__] - 1)%256]} default {}}; incr _}"]
 
 POLYGLOT = """#define EOF char* /* !\\
 cat >>/dev/null <<EOF
@@ -141,9 +100,9 @@ EoF
 
 def attach_interpreters(code):
     data = {'code': ' \\\n'.join(code),
-            'bash_interpreter': INT_BASH,
-            'tcl_interpreter': INT_TCL,
-            'c_interpreter': INT_C}
+            'bash_interpreter': '\n'.join(INT_BASH),
+            'tcl_interpreter': '\n'.join(INT_TCL),
+            'c_interpreter': '\n'.join(INT_C)}
 
     return [POLYGLOT % data]
 
