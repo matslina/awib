@@ -27,7 +27,7 @@ while getopts "ht:c:s:b:m:" opt; do
 	    echo >&2 -e "\t-h\tprint this message"
 	    echo >&2 -e "\t-t T\ttest for compile target T ($ALL_TARGETS)"
 	    echo >&2 -e "\t-c C\trun test case C ($ALL_TEST_CASES)"
-	    echo >&2 -e "\t-a A\tuse awib build A ($AWIB_BUILD)"
+	    echo >&2 -e "\t-b A\tuse awib build A ($AWIB_BUILD)"
 	    echo >&2 -e "\t-m M\tuse method M to run awib ($ALL_METHODS)"
 	    exit 0
 	    ;;
