@@ -1,17 +1,28 @@
-awib-0.2
+awib-0.3
 
-Awib's Written In Brainfuck (awib) is a brainfuck compiler written in
-brainfuck.
+About
+=====
 
-Notable features: optimization, portability and support for multiple
-target platforms.
+In summary, awib 0.3 is:
 
-As of version 0.2, awib is a 3-language polyglot; in addition to being
-fully functional brainfuck, it is also compileable C and executable
-bash script.
+ o) a brainfuck compiler written in brainfuck
+ o) polyglot in Tcl, C and bash (and brainfuck!)
+ o) optimizing
+ o) capable of compiling to
+    *) Linux executables (for i386)
+    *) Tcl
+    *) Ruby
+    *) Go
+    *) C
+
+The bulk of awib is written by Mats Linander <matslina@gmail.com>.
+
+Project blog: http://awibiswritteninbrainfuck.blogspot.com/
+Repository:   http://awib.googlecode.com/
 
 
-== Usage
+Usage
+=====
 
 Feed awib brainfuck source code as input and the compiled program
 will be written as output.
@@ -35,6 +46,8 @@ Awib will then produce output accordingly.
  +----------------+--------------------------------------------+
  | lang_go        | Go programming language                    |
  +----------------+--------------------------------------------+
+ | lang_tcl       | Tcl programming language                   |
+ +----------------+--------------------------------------------+
        Table 1 - Available target platforms
 
 For instance, the following input would produce an executable hello
@@ -57,7 +70,8 @@ And this would give you the hello world-program in C:
   -[-<+++>]<.---[--->++++<]>-.+++.------.--------.-[---<+>]<.[--->+<]>-.
 
 
-== Optimizations
+Optimizations
+=============
 
 Awib is an optimizing compiler:
 
@@ -77,7 +91,8 @@ Awib is an optimizing compiler:
     of another loop.
 
 
-== Requirements
+Requirements
+============
 
 Awib will run smoothly in any brainfuck environment where:
 
@@ -103,7 +118,9 @@ Using bash works fine, but is very very very slow:
 $ (echo "@386_linux"; cat awib.b) | bash awib.b > awib
 $ chmod +x awib
 
-== Environment
+
+Environment
+===========
 
 Code compiled with awib will execute in an environment where:
 
@@ -119,8 +136,8 @@ Code compiled with awib will execute in an environment where:
       direction, results in undefined behaviour.
 
 
-== License
-
+License
+=======
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -134,5 +151,5 @@ Code compiled with awib will execute in an environment where:
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Mats Linander 2010-04-04
-matslina (at) gmail (d0t) com
+
+Mats Linander, 2010-10-03
