@@ -251,4 +251,4 @@ python with this backend, since awib has > 25 levels of nested loops.
  |              | }                                                          |
  |              | run stdin stdout                                           |
  +--------------+------------------------------------------------------------+
-   Table 4 - Language definition for Ruby
+   Table 5 - Language definition for Tcl
