@@ -105,6 +105,7 @@ int run() {
 
     case('.'):
       putchar(*p);
+      fflush(stdout);
       break;
 
     case('+'):
