@@ -131,7 +131,7 @@ def format(code, width=78, formatfile=None):
     """Formats preprocessed code for pretty-printing."""
 
     if formatfile is None:
-        return [code[j:j+width] for j in xrange(0, len(code), width)]
+        return [code[j:j+width] for j in range(0, len(code), width)]
 
     out, line, code = list(), list(), list(code)
     for f in open(formatfile).read()[:len(code)]:
@@ -145,7 +145,7 @@ def format(code, width=78, formatfile=None):
     if line:
         out.append(''.join(line))
 
-    return out + [''.join(code[j:j+width]) for j in xrange(0,len(code),width)]
+    return out + [''.join(code[j:j+width]) for j in range(0,len(code),width)]
 
 def main():
     parser = optparse.OptionParser(usage="%prog [options] FILE")
