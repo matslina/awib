@@ -24,6 +24,7 @@ class BackendTestCase(common.BFTestCase):
 
     BACKEND_PATH = NotImplementedError()
     BACKEND_INDEX = NotImplementedError()
+    MAX_NESTED_LOOPS = 300
 
     def __init__(self, *args, **kwargs):
         common.BFTestCase.__init__(self, *args, **kwargs)
@@ -91,12 +92,12 @@ class BackendTestCase(common.BFTestCase):
         self.run_ir([],[],[])
 
     def test_basic_operations(self):
-        # ,[->>++++++++<<]>>.[-].
+        # ,[->>++++++++<<]>>.[-].[-]+
         self.run_ir([ir.INPUT(),
                      ir.OPEN(),
                        ir.SUB(1), ir.RIGHT(2), ir.ADD(8), ir.LEFT(2),
                      ir.CLOSE(),
-                     ir.RIGHT(2), ir.OUTPUT(), ir.CLEAR(), ir.OUTPUT()],
+                     ir.RIGHT(2), ir.OUTPUT(), ir.SET(0), ir.OUTPUT()],
                     [8],
                     [64, 0])
 
@@ -113,7 +114,7 @@ class BackendTestCase(common.BFTestCase):
                          ir.LEFT(1), ir.CLOSE(),
                        ir.LEFT(1), ir.CLOSE(),
                      ir.LEFT(1), ir.CLOSE(),
-                     ir.RIGHT(5), ir.OUTPUT(), ir.CLEAR(), ir.OUTPUT()],
+                     ir.RIGHT(5), ir.OUTPUT(), ir.SET(0), ir.OUTPUT()],
                     [], [64, 0])
 
         # ++>+[[[[->]<]>]<].<.
@@ -150,14 +151,25 @@ class BackendTestCase(common.BFTestCase):
                     [], [0, 255, 1, 255, 0, 255])
 
     def test_deep_nested_loops(self):
-        # +[{300}-(>+.<]){300}
+        # +[{many}-(>+.<]){many}
         self.run_ir([ir.ADD(1)] +
-                    ([ir.OPEN()] * 300) +
+                    ([ir.OPEN()] * self.MAX_NESTED_LOOPS) +
                     [ir.SUB(1)] +
                     ([ir.RIGHT(1), ir.ADD(1), ir.OUTPUT(),
-                      ir.LEFT(1), ir.CLOSE()] * 300),
-                    [], range(1,256) + range(300-255),
+                      ir.LEFT(1), ir.CLOSE()] * self.MAX_NESTED_LOOPS),
+                    [], [i % 256 for i in range(1, self.MAX_NESTED_LOOPS + 1)],
                     steps=50000000)
+
+    def test_set(self):
+        self.run_ir([ir.SET(0), ir.OUTPUT()], [], [0])
+        self.run_ir([ir.SET(1), ir.OUTPUT()], [], [1])
+        self.run_ir([ir.SET(2), ir.OUTPUT()], [], [2])
+        self.run_ir([ir.SET(255), ir.OUTPUT()], [], [255])
+
+        self.run_ir([ir.ADD(12), ir.SET(0), ir.OUTPUT()], [], [0])
+        self.run_ir([ir.ADD(12), ir.SET(1), ir.OUTPUT()], [], [1])
+        self.run_ir([ir.ADD(12), ir.SET(2), ir.OUTPUT()], [], [2])
+        self.run_ir([ir.ADD(12), ir.SET(255), ir.OUTPUT()], [], [255])
 
 
 class LangGenericTestCase(BackendTestCase):

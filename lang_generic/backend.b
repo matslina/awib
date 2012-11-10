@@ -1,6 +1,7 @@
 % 22(0) *T (code) 0 M m
 % where T = target index and Mm = maximum loop depth
 
+
 # move T; add header and footer codes
 [-<<<<<<<<<<<<<<<<<+>>>>>>>>>>>>>>>>>]
 >[>>]>[-]>[-]<++++++++[-<++++>]<[<<]>++++++++[-<++++>]<-
@@ -51,9 +52,9 @@
 >>>>>>>>>>>>>>>>
 
 % 0 0 T D d 10(0) P *0 Q (code)
-# if P in {ADD SUB LEFT RIGHT} then output(itoa(Q))
-<[->+<<+>]++++>-[<->--[<->--[<->-[<->++++++[-]]]]]<
-% 0 0 T D d 9(0) P *c 0 Q (code)   (where c gt 0 iff P in {ADD SUB LEFT RIGHT})
+# if P in {ADD SUB LEFT RIGHT SET} then output(itoa(Q))
+<[->+<<+>]+++++>-[<->--[<->--[<->-[<->---[<->+++++++++[-]]]]]]<
+% 0 0 T D d 9(0) P *c 0 Q (code)   (where c gt 0 iff P in {ADD SUB LEFT RIGHT SET})
 
 [[-]>>[-<<<<+>>>>]<<<<<<
  # output D=Q in base 10

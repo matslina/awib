@@ -10,7 +10,7 @@ a total of nine macros. Each macro corresponds to one of the awib bytecode
 operation. The header is as follows:
 
  #include <stdio.h>
- #define e9(x) *p=0;
+ #define e9(x) *p=x;
  #define e8(x) }
  #define e7(x) while(*p){
  #define e6(x) p+=x;

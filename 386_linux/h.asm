@@ -140,8 +140,10 @@ code_start:
 	int	0x80		; read edx bytes to [ecx] from fd ebx
 	inc	ebx		; restore ebx
 
-;;; CLEAR
+;;; SET(0)
 	mov	[ecx],bh
+;;; SET(i)   1<i<=255
+	mov     byte [ecx],255
 
 ;;; OPEN
 	cmp	bh,[ecx]

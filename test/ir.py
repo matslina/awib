@@ -44,7 +44,10 @@ class INPUT(Op): code = 2
 class OUTPUT(Op): code = 4
 class OPEN(Op): code = 7
 class CLOSE(Op): code = 8
-class CLEAR(Op): code = 9
+class SET(Op):
+    code = 9
+    range = xrange(0,256)
 
-operations = [ADD, SUB, LEFT, RIGHT, INPUT, OUTPUT, CLOSE, OPEN, CLEAR]
+operations = [ADD, SUB, LEFT, RIGHT, INPUT, OUTPUT, CLOSE, OPEN, SET]
+
 code_to_op = dict((op.code, op) for op in operations)

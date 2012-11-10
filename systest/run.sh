@@ -157,8 +157,7 @@ function compile {
 
 	lang_go)
 	    mv $out $out.go
-	    8g -o $out.8 $out.go
-	    8l -o $out $out.8
+	    go build -o $out $out.go
 	    ;;
 
 	lang_tcl)

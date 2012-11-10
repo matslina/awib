@@ -6,11 +6,11 @@ import backend
 
 class GoTest(backend.LangGenericTestCase):
     BACKEND_INDEX = 4
+    MAX_NESTED_LOOPS = 95
 
     def run_program(self, path, input):
         os.rename(path, path + ".go")
-        subprocess.call(["8g", "-o", path + ".8", path + ".go"])
-        subprocess.call(["8l", "-o", path, path + ".8"])
+        subprocess.call(["go", "build", "-o", path, path + ".go"])
         p = subprocess.Popen([path],
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE)

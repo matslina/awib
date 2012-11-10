@@ -120,7 +120,7 @@ class FrontendTest(common.BFTestCase):
     def test_clear_loops(self):
         self._run_and_check_ir("+[-]+[+]",
                                [ir.ADD(1),
-                                ir.CLEAR(),
+                                ir.SET(0),
                                 ir.ADD(1),
                                 ir.OPEN(),
                                   ir.ADD(1),
@@ -132,7 +132,7 @@ class FrontendTest(common.BFTestCase):
                                 ir.OPEN(),
                                 ir.CLOSE(),
                                 ir.OUTPUT(),
-                                ir.CLEAR()], maxdepth=2)
+                                ir.SET(0)], maxdepth=2)
         self._run_and_check_ir("[-][+++]", [])
 
     def test_cancellation(self):
