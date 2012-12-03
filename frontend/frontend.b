@@ -2,7 +2,6 @@
 # Please refer to the documentation in the full source distribution
 # of awib for details regarding this file
 
-
 ## Phase 1
 ## Target identification
 ##
@@ -178,7 +177,7 @@
 [-[-[-[-[--------------[--[-----------------------------[
 
 # CLOSING BRACKET
-# if this closes OPEN SUB(1) then overwrite with CLEAR
+# if this closes OPEN SUB(1) then overwrite with SET(0)
 # else append CLOSE
 -->-<<<
 <<<<[->>>>+>+<<<<<]>>>>>[-<<<<<+>>>>>]<<<[->>>+>+<<<<]>>>>[-<<<<+>>>>]<<<
@@ -188,18 +187,21 @@
 <---        [+++[-]>>[-]<<]
 <-------[+++++++[-]>>>[-]<<<]
 ++++++++>>>[-<<<[-]<-<---<<++>>>]
-% (code) CLOSE/CLEAR 0 *0 0 0
+% (code) CLOSE/SET 0 *0 0 0
 ]
 
 # OPENING BRACKET
-# if previous op was CLEAR or CLOSE or if this is the first op
+# if previous op was SET(0) or CLOSE or if this is the first op
 # then ignore this loop
 >[-
 % (code) 0 0 0 *0 0 0
-<<+++<+<<[>>>-<-]>>[->>]<<+<<--------[>>>-<-]>>[->>]<<+<<-
-[>>>-<-]>>[->>]<<<<+++++++++>>+++++++>[->+<]>
++++<<<<<
+[>>>>>-<<<<<[->>>+<<<]]>>>
+--------[++++++++[-<+>]<-------->>>-<<]<
+-[+++++++++[-<<+>>]<<--------->>>>>-<<<]<<+++++++++>>
++<[>-]>[>]<[->>>[-<+>]<<<]>>>[-]<<<+++++++>>
 % (code) OPEN *c 0 0 0 (where c = (should this loop be ignored ? 1 : 0))
-[>>>>>+<<<<<[
+[[-]+>>>>>+<<<<<[
 % (code) OPEN *1 0 0 0 L l
 >>+<,[>-]>[>]<[-<<->>]+<+[>-]>[>]<[-<<->>]<-
 % (code) OPEN c *X 0 0 L l  (where c = (EOF reached ? 0 : 1) and X = byte read)
@@ -257,16 +259,28 @@
 #if previous op is SUB(i)
 #   if i is 255 then remove previous op
 #   else overwrite with SUB(inc(i))
+#elif previous op is SET(i) then overwrite with SET(dec(i) mod 256)
 #else append SUB(1)
 >[
--<<<<<[->>+>+<<<]>>[-<<+>>]<[->+>>+<<<]>[-<+>]
-% (code) *0 P i 0        (where P(i) = previous op)
->---[<+++>+++[-]+>[-]>]>
-[<++++++++++++++++[->----------------<]>+>+<
-[<<<+>>++++++++++++++++[->++++++++++++++++<]>[-]>-<]
->[-<<<<[-]<--->>>]<]
++>+>+<<<<<<<
+---[+++[->>+<<]>>--->>>->-<<<<<<]>>
+------[+++++++++[-<<+>>]<<--------->>>>>->>-<<<<<]<<+++++++++>>>>
+% (code P i) 0 0 *0 a b c    (where P(i) is previous op
+                                    a==1 iff P is SUB or SET
+                                    b==1 iff P is SUB
+                                    c==1 iff P is SET)
++>[
+-<-<<++++++++++++++++[-<---------------->]
++<+[>-]>[>]++++++++++++++++[-<<++++++++++++++++>>]<<->[->>>+<<<]
++<[>-]>[>]<[->>+<<]
+% (code P i) *0 0 e d b c   (where d==1 iff i==255
+                                   e==1 iff i==0)
+>>>>>[-<<[-]<[-<<++++++++++++++++[-<++++++++++++++++>]>>]<<<->>>>>>]
+<[-<<[-]<<<+>>>>[-<<<<-[-]<[-]>>>]>]<]
+% (code) 0 0 g *0     (where g==1 iff previous op is neither SUB not SET)
+<[-<+<+++>>>>]
 ]<
-% (code) SUB(?) 0 *0 0 0
+% (code) SET/SUB(?) 0 *0 0 0
 ]
 
 # INPUT
@@ -280,19 +294,31 @@
 #if previous op is ADD(i)
 #   if i is 255 then remove previous op
 #   else overwrite with ADD(inc(i))
+# if previous op is SET(i) then overwrite with SET(inc(i) mod 256)
 #else append ADD(1)
 >[
--<<<<<[->>+>+<<<]>>[-<<+>>]<[->+>>+<<<]>[-<+>]
-% (code) *0 P i 0        (where P(i) = previous op)
->-[<+>+[-]+>[-]>]>
-[<++++++++++++++++[->----------------<]>+>+<
-[<<<+>>++++++++++++++++[->++++++++++++++++<]>[-]>-<]
->[-<<<<[-]<->>>]<]
+<++<
+# (code P i) 0 *0 2 1 0   (where P(i) is previous op)
+<<<-[+[->>+<<]>>->>->-<<<<<]>>
+--------[+++++++++[-<<+>>]<<--------->>>>-<<]<<+++++++++>>
+% (code P i) *0 0 a b
+++++++++++++++++[-<---------------->]+<+[>-]>[>]<[->+<]
+++++++++++++++++[-<++++++++++++++++>]<->
+% (code P i) *0 c a b     (where a==1 iff P is ADD or SET
+                                 b==1 iff P is ADD
+                                 c==1 iff i is 255)
++>>[ add or set: no ADD(1); inc(i)  -<<-<+>>
+     [ prev i 255: clear i  -<<[-]>>>>
+       [ prev ADD: remove prev completely -<<<<<[-]>>>]
+     <<]>]>[-]<<[-]<
+% (code) *d 0 0 0   (where d==1 iff previous op is neither ADD nor SET)
+[>+>]>>
 ]<
-% (code) ADD(?) 0 *0 0 0
+% (code) SET/ADD(?) 0 *0 0 0
 ]
 
 # reduce sequences of ADD SUB  and LEFT RIGHT
+# FIXME: handle SET as well
 <<[[->+<]>>+<<]>[-<+>]<<<[[->>>+<<<]>>>>+<<<<]>>>[-<<<+>>>]+>--[<->++[-]]<
 % (code) *c 0 0    (where c = (previous two ops carry arguments ? 1 : 0))
 [-<<[->>+>+<<<]>>[-<<+>>]<<<<[->>>>+>+<<<<<]>>>>[-<<<<+>>>>]+>
@@ -312,9 +338,6 @@
 ]
 <<<<[<<]
 % 6(0) *0 0 (code)
-
-
-
 
 
 ## Phase 3

@@ -120,13 +120,13 @@ class FrontendTest(common.BFTestCase):
     def test_clear_loops(self):
         self._run_and_check_ir("+[-]+[+]",
                                [ir.ADD(1),
-                                ir.SET(0),
-                                ir.ADD(1),
+                                ir.SET(1),
                                 ir.OPEN(),
                                   ir.ADD(1),
                                 ir.CLOSE()], maxdepth=2)
 
     def test_loop_elimination(self):
+        self._run_and_check_ir("[.]", [])
         self._run_and_check_ir("[+++]+[][+++].[-][+++]",
                                [ir.ADD(1),
                                 ir.OPEN(),
@@ -154,7 +154,34 @@ class FrontendTest(common.BFTestCase):
         self._run_and_check_ir(">>>", [ir.RIGHT(3)])
         self._run_and_check_ir(['>']*128, [ir.RIGHT(127), ir.RIGHT(1)])
 
+    def test_set(self):
+        # simple cases
+        self._run_and_check_ir(',[-]-', [ir.INPUT(), ir.SET(255)])
+        self._run_and_check_ir(',[-]', [ir.INPUT(), ir.SET(0)])
+        self._run_and_check_ir(',[-]+', [ir.INPUT(), ir.SET(1)])
+        self._run_and_check_ir(',[-]++', [ir.INPUT(), ir.SET(2)])
+        self._run_and_check_ir(',[-]+++', [ir.INPUT(), ir.SET(3)])
+        self._run_and_check_ir(',[-]-', [ir.INPUT(), ir.SET(255)])
+        self._run_and_check_ir(',[-]--', [ir.INPUT(), ir.SET(254)])
+        self._run_and_check_ir(',[-]---', [ir.INPUT(), ir.SET(253)])
+
+        # overflow
+        self._run_and_check_ir(',[-]' + '+' * 255,
+                               [ir.INPUT(), ir.SET(255)])
+        self._run_and_check_ir(',[-]' + '+' * 256,
+                               [ir.INPUT(), ir.SET(0)])
+        self._run_and_check_ir(',[-]' + '+' * 257,
+                               [ir.INPUT(), ir.SET(1)])
+
+        self._run_and_check_ir(',[-]' + '-' * 255,
+                               [ir.INPUT(), ir.SET(1)])
+        self._run_and_check_ir(',[-]' + '-' * 256,
+                               [ir.INPUT(), ir.SET(0)])
+        self._run_and_check_ir(',[-]' + '-' * 257,
+                               [ir.INPUT(), ir.SET(255)])
+
     def test_contraction_and_cancellation(self):
+        # basic cases
         self._run_and_check_ir("++++--", [ir.ADD(2)])
         self._run_and_check_ir("--++++", [ir.ADD(2)])
         self._run_and_check_ir("++----", [ir.SUB(2)])
@@ -164,6 +191,7 @@ class FrontendTest(common.BFTestCase):
         self._run_and_check_ir(">><<<<", [ir.LEFT(2)])
         self._run_and_check_ir("<<<<>>", [ir.LEFT(2)])
 
+        # cases triggering argument overflow
         self._run_and_check_ir(['>']*130 + ['<', '<'],
                                [ir.RIGHT(127),
                                 ir.RIGHT(1)])
