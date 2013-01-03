@@ -15,9 +15,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdint.h>
 
 #ifndef CELLSIZE
-#define CELLSIZE char
+#define CELLSIZE int8_t
 #endif
 typedef CELLSIZE cell_t;
 
@@ -115,7 +116,7 @@ int run() {
     case('-'):
       if(*p<-256){
 	fprintf(stderr,"bad loop detected at instruction %d\n",
-		ip-program);
+		(int)(ip-program));
 	return -1;
       }
       *p -= 1;
@@ -134,7 +135,7 @@ int run() {
 	tmp = jump_past(ip);
 	if( tmp==NULL ) {
 	  fprintf(stderr,"Error: Unbalanced loop at instruction %d.\n",
-		  ip-program);
+		  (int)(ip-program));
 	  return -1;
 	}
 	ip = tmp;
@@ -158,7 +159,7 @@ int run() {
     }
 
     if( p>pmax ){
-      fprintf(stderr,"Error: Pointer moved beyond memory area! (size=%d)\n",
+      fprintf(stderr,"Error: Pointer moved beyond memory area! (size=%zd)\n",
 	      sizeof(buf));
       return -1;
     }
@@ -173,7 +174,7 @@ int run() {
   tmp = pop();
   if( tmp!=NULL ) {
     fprintf(stderr,"Error: Loop opened at instruction %d is never closed!\n",
-	    tmp-program);
+	    (int)(tmp-program));
     return -1;
   }
 
@@ -202,7 +203,7 @@ int main(int argc, char *argv[]) {
     if(c=='<'||c=='>'||c==','||c=='.'||c=='-'||c=='+'||c=='['||c==']')
       program[i++] = c;
   if( i==sizeof(program) ){
-    fprintf(stderr,"Error: Program is too large, maximum is %d operations.\n",
+    fprintf(stderr,"Error: Program is too large, maximum is %zd operations.\n",
 	    sizeof(program));
     exit(-1);
   }
