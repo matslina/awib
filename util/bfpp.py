@@ -134,7 +134,7 @@ def format(code, width=78, formatfile=None):
         return [code[j:j+width] for j in range(0, len(code), width)]
 
     out, line, code = list(), list(), list(code)
-    for f in open(formatfile).read()[:len(code)]:
+    for f in open(formatfile).read():
         if f == ' ':
             line.append(' ')
         elif f == '\n':
@@ -142,6 +142,8 @@ def format(code, width=78, formatfile=None):
             line = []
         else:
             line.append(code.pop(0))
+            if not code:
+                break
     if line:
         out.append(''.join(line))
 
