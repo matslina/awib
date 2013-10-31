@@ -73,3 +73,8 @@ with a 16 bit integer holding the size of the code after the OPEN
 up to and including the CLOSE.
 
 E.g.:  OPEN,OUTPUT,CLOSE -> Y = sizeof(OUTPUT) + sizeof(CLOSE) = 12
+
+Operations LEFT and RIGHT are a bit more tricky than what table 1
+suggests. The assembly for cases where x > 2 will only work for x <=
+127. Cases where x > 127 are handled by treating them as LEFT(127) and
+then reprocessing LEFT(x-127).

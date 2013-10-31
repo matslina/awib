@@ -36,10 +36,10 @@ class SUB(Op):
     range = xrange(1,256)
 class LEFT(Op):
     code = 5
-    range = xrange(1,128)
+    range = xrange(1,256)
 class RIGHT(Op):
     code = 6
-    range = xrange(1,128)
+    range = xrange(1,256)
 class INPUT(Op): code = 2
 class OUTPUT(Op): code = 4
 class OPEN(Op): code = 7
