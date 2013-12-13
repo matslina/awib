@@ -150,9 +150,17 @@ class FrontendTest(common.BFTestCase):
         self._run_and_check_ir(['-']*255, [ir.SUB(255)])
         self._run_and_check_ir(['-']*256, [])
         self._run_and_check_ir("<<<", [ir.LEFT(3)])
-        self._run_and_check_ir(['<']*128, [ir.LEFT(127), ir.LEFT(1)])
+        self._run_and_check_ir(['<']*128, [ir.LEFT(128)])
         self._run_and_check_ir(">>>", [ir.RIGHT(3)])
-        self._run_and_check_ir(['>']*128, [ir.RIGHT(127), ir.RIGHT(1)])
+        self._run_and_check_ir(['>']*128, [ir.RIGHT(128)])
+
+        # overflow
+        self._run_and_check_ir(['>']*255, [ir.RIGHT(255)])
+        self._run_and_check_ir(['>']*256, [ir.RIGHT(255), ir.RIGHT(1)])
+        self._run_and_check_ir(['>']*257, [ir.RIGHT(255), ir.RIGHT(2)])
+        self._run_and_check_ir(['<']*255, [ir.LEFT(255)])
+        self._run_and_check_ir(['<']*256, [ir.LEFT(255), ir.LEFT(1)])
+        self._run_and_check_ir(['<']*257, [ir.LEFT(255), ir.LEFT(2)])
 
     def test_set(self):
         # simple cases
@@ -192,21 +200,21 @@ class FrontendTest(common.BFTestCase):
         self._run_and_check_ir("<<<<>>", [ir.LEFT(2)])
 
         # cases triggering argument overflow
-        self._run_and_check_ir(['>']*130 + ['<', '<'],
-                               [ir.RIGHT(127),
+        self._run_and_check_ir(['>']*258 + ['<', '<'],
+                               [ir.RIGHT(255),
                                 ir.RIGHT(1)])
-        self._run_and_check_ir(['>']*130 + ['<', '<', '<'],
-                               [ir.RIGHT(127)])
-        self._run_and_check_ir(['>']*130 + ['<', '<', '<', '<'],
-                               [ir.RIGHT(126)])
+        self._run_and_check_ir(['>']*258 + ['<', '<', '<'],
+                               [ir.RIGHT(255)])
+        self._run_and_check_ir(['>']*258 + ['<', '<', '<', '<'],
+                               [ir.RIGHT(254)])
 
-        self._run_and_check_ir(['<']*130 + ['>', '>'],
-                               [ir.LEFT(127),
+        self._run_and_check_ir(['<']*258 + ['>', '>'],
+                               [ir.LEFT(255),
                                 ir.LEFT(1)])
-        self._run_and_check_ir(['<']*130 + ['>', '>', '>'],
-                               [ir.LEFT(127)])
-        self._run_and_check_ir(['<']*130 + ['>', '>', '>', '>'],
-                               [ir.LEFT(126)])
+        self._run_and_check_ir(['<']*258 + ['>', '>', '>'],
+                               [ir.LEFT(255)])
+        self._run_and_check_ir(['<']*258 + ['>', '>', '>', '>'],
+                               [ir.LEFT(254)])
 
 
     ##

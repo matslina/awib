@@ -223,26 +223,26 @@
 ]<]
 
 # MOVE RIGHT
-# if previous op is RIGHT(i) and i is not 127 then overwrite with RIGHT(inc(i))
+# if previous op is RIGHT(i) and i is not 255 then overwrite with RIGHT(inc(i))
 # else append RIGHT(1)
 >[
 -<<<<<[->>+>+<<<]>>[-<<+>>]<[->+>>+<<<]>[-<+>]
 % (code) *0 P i 0      (where P(i) = previous op)
-++++++++[->>----------------<<]>>+
-[<<++++++++[->>++++++++++++++++<<]+>>[-]]<------[<[-]>++++++[-]]
+++++++++++++++++[->>----------------<<]>>+
+[<<++++++++++++++++[->>++++++++++++++++<<]+>>[-]]<------[<[-]>++++++[-]]
 <[->>+<<]++++++>+>[-<-<------<+>]>>
 ]<
 % (code) RIGHT(?) 0 *0 0 0
 ]
 
 # MOVE LEFT
-# if previous op is LEFT(i) and i is not 127 then overwrite with LEFT(inc(i))
+# if previous op is LEFT(i) and i is not 255 then overwrite with LEFT(inc(i))
 # else append LEFT(1)
 >[
 -<<<<<[->>+>+<<<]>>[-<<+>>]<[->+>>+<<<]>[-<+>]
 % (code) *0 P i 0      (where P(i) = previous op)
-++++++++[->>----------------<<]>>+
-[<<++++++++[->>++++++++++++++++<<]+>>[-]]<-----[<[-]>+++++[-]]
+++++++++++++++++[->>----------------<<]>>+
+[<<++++++++++++++++[->>++++++++++++++++<<]+>>[-]]<-----[<[-]>+++++[-]]
 <[->>+<<]+++++>+>[-<-<-----<+>]>>
 ]<
 % (code) LEFT(?) 0 *0 0 0
