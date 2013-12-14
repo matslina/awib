@@ -177,17 +177,20 @@
 [-[-[-[-[--------------[--[-----------------------------[
 
 # CLOSING BRACKET
-# if this closes OPEN SUB(1) then overwrite with SET(0)
+# if this closes OPEN SUB(1) or OPEN ADD(1) then overwrite with SET(0)
 # else append CLOSE
--->-<<<
-<<<<[->>>>+>+<<<<<]>>>>>[-<<<<<+>>>>>]<<<[->>>+>+<<<<]>>>>[-<<<<+>>>>]<<<
-[->>>+>+<<<<]>>>>[-<<<<+>>>>]+
-% (code) P Q R *1 0   (where P0 QR could be OPEN SUB(1))
-<-            [+[-]>[-]<]
-<---        [+++[-]>>[-]<<]
-<-------[+++++++[-]>>>[-]<<<]
-++++++++>>>[-<<<[-]<-<---<<++>>>]
-% (code) CLOSE/SET 0 *0 0 0
+--<<
++<<<<-------[>>>>-]>>>>[>>>>]<<<<<<<<+++++++>>>>
+% (code) P i Q j *c 0 0 1 0   (where c = (P(i) == OPEN(0)))
+[<<---[>>-]>>[>>]<<[->>>>+<<<<]+
+ << ++[>>-]>>[>>]<<[->>>>+<<<<]<<+>>>>>>
+ % (code) OPEN 0 Q j 0 0 0 1 *d   (where d = (Q == ADD or Q == SUB))
+ [-<<<<+<-[>-]>[>]<<+>
+  % (code) OPEN 0 Q j *e 0 0 1 0   (where e = (j == 1) == overwrite SET(0))
+  [->>>-<<<<-<[-]<<++>>]>>>>]<<<<]>
+% (code) 0 *0 0 f 0    (where f = 1 if append CLOSE)
+>>[-<<<++++++++>>>>>]<<
+% (code) CLOSE()/SET(0) 0 *0 0 0
 ]
 
 # OPENING BRACKET

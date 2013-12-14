@@ -93,7 +93,7 @@ class FrontendTest(common.BFTestCase):
                                 ir.CLOSE()], maxdepth=2)
 
     def test_nested_loops(self):
-        self._run_and_check_ir("+[-[+<].]>[[[]+]+]+[+]",
+        self._run_and_check_ir("+[-[+<].]>[[[]+]+]+",
                                [ir.ADD(1),
                                 ir.OPEN(),
                                   ir.SUB(1),
@@ -112,18 +112,14 @@ class FrontendTest(common.BFTestCase):
                                   ir.CLOSE(),
                                   ir.ADD(1),
                                 ir.CLOSE(),
-                                ir.ADD(1),
-                                ir.OPEN(),
-                                  ir.ADD(1),
-                                ir.CLOSE()], maxdepth=4)
+                                ir.ADD(1)], maxdepth=4)
 
     def test_clear_loops(self):
-        self._run_and_check_ir("+[-]+[+]",
-                               [ir.ADD(1),
-                                ir.SET(1),
-                                ir.OPEN(),
-                                  ir.ADD(1),
-                                ir.CLOSE()], maxdepth=2)
+        self._run_and_check_ir(",[-].[+]",
+                               [ir.INPUT(),
+                                ir.SET(0),
+                                ir.OUTPUT(),
+                                ir.SET(0)], maxdepth=1)
 
     def test_loop_elimination(self):
         self._run_and_check_ir("[.]", [])
@@ -165,25 +161,25 @@ class FrontendTest(common.BFTestCase):
     def test_set(self):
         # simple cases
         self._run_and_check_ir(',[-]-', [ir.INPUT(), ir.SET(255)])
-        self._run_and_check_ir(',[-]', [ir.INPUT(), ir.SET(0)])
+        self._run_and_check_ir(',[+]', [ir.INPUT(), ir.SET(0)])
         self._run_and_check_ir(',[-]+', [ir.INPUT(), ir.SET(1)])
-        self._run_and_check_ir(',[-]++', [ir.INPUT(), ir.SET(2)])
+        self._run_and_check_ir(',[+]++', [ir.INPUT(), ir.SET(2)])
         self._run_and_check_ir(',[-]+++', [ir.INPUT(), ir.SET(3)])
-        self._run_and_check_ir(',[-]-', [ir.INPUT(), ir.SET(255)])
+        self._run_and_check_ir(',[+]-', [ir.INPUT(), ir.SET(255)])
         self._run_and_check_ir(',[-]--', [ir.INPUT(), ir.SET(254)])
-        self._run_and_check_ir(',[-]---', [ir.INPUT(), ir.SET(253)])
+        self._run_and_check_ir(',[+]---', [ir.INPUT(), ir.SET(253)])
 
         # overflow
         self._run_and_check_ir(',[-]' + '+' * 255,
                                [ir.INPUT(), ir.SET(255)])
-        self._run_and_check_ir(',[-]' + '+' * 256,
+        self._run_and_check_ir(',[+]' + '+' * 256,
                                [ir.INPUT(), ir.SET(0)])
         self._run_and_check_ir(',[-]' + '+' * 257,
                                [ir.INPUT(), ir.SET(1)])
 
         self._run_and_check_ir(',[-]' + '-' * 255,
                                [ir.INPUT(), ir.SET(1)])
-        self._run_and_check_ir(',[-]' + '-' * 256,
+        self._run_and_check_ir(',[+]' + '-' * 256,
                                [ir.INPUT(), ir.SET(0)])
         self._run_and_check_ir(',[-]' + '-' * 257,
                                [ir.INPUT(), ir.SET(255)])
@@ -285,12 +281,12 @@ class FrontendTest(common.BFTestCase):
         self._run_and_check_mismatched("+[")
         self._run_and_check_mismatched("+[-]>[")
         self._run_and_check_mismatched("+[-]>[+++<.")
-        self._run_and_check_mismatched("+[-]>[+++<.[,,+>]")
+        self._run_and_check_mismatched("+[+]>[+++<.[,,+>]")
         self._run_and_check_mismatched("+[-]>[+++<.[,,+>]]+]")
         self._run_and_check_mismatched("]")
         self._run_and_check_mismatched("]++")
-        self._run_and_check_mismatched("]++[-]")
-        self._run_and_check_mismatched("]++[-]+[")
+        self._run_and_check_mismatched("]++[+]")
+        self._run_and_check_mismatched("]++[+]+[")
         self._run_and_check_mismatched("][")
 
 
