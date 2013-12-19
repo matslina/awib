@@ -320,17 +320,31 @@
 % (code) SET/ADD(?) 0 *0 0 0
 ]
 
-# reduce sequences of ADD SUB  and LEFT RIGHT
-# FIXME: handle SET as well
-<<[[->+<]>>+<<]>[-<+>]<<<[[->>>+<<<]>>>>+<<<<]>>>[-<<<+>>>]+>--[<->++[-]]<
-% (code) *c 0 0    (where c = (previous two ops carry arguments ? 1 : 0))
-[-<<[->>+>+<<<]>>[-<<+>>]<<<<[->>>>+>+<<<<<]>>>>[-<<<<+>>>>]+>
-% (code) 1 *S 0    (where S = sum of previous two ops)
-----[-------[<->+++++++++++[-]]]<
-% (code) *c 0 0    (where c = (previous ops ADD/SUB or LEFT/RIGHT ? 1 : 0))
-[-<-<[-]+<-[>-<[->>+<<]]>>[-<<+>>]<[-<<[-]]]
+# Optimize
+% (code P i Q j) 0 *0   (where P(i) and Q(j) are the two most recent ops)
+
+# Cancellation
+# if P/Q in (LEFT/RIGHT RIGHT/LEFT ADD/SUB SUB/ADD) and j == 1
+#    remove Q(j) and decrement i
+#    if dec(i) == 0 then remove P(i)
+<+<-[>-]>[>]<<+>[
+ # j == 1
+ % P i Q 1 *1 0
+ <<<[>>-]>>[>>]<<[->-<]+>[-
+  # i != 0
+  <-<[->+<<<+>>]
+  % add(P Q) i *0 Q 0 0
+  +<<----[>>-]>>[>>]<<[->>>+<<<]+<<-------[>>-]>>[>>]<<[->>>+<<<]
+  >[-<+<<->>>]+<<<+++++++++++>>>>>
+  % P i Q 1 0 *c   (where c = add(P Q) in (add(LEFT RIGHT) add(ADD SUB)))
+  [-<<-<[-]+<-[>-]>[>]<[-<<[-]]>]<]]
 % (code) *0 0 0
-]
+
+# if P/Q in (SET/ADD or SET/SUB) then do wrapping inc/dec
+# TODO: ^
+
+# Contraction
+# TODO: move down and generalize the contraction code
 
 >>>]
 
