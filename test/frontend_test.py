@@ -149,6 +149,7 @@ class FrontendTest(common.BFTestCase):
                                [ir.OPEN()] * 8 +
                                [ir.OUTPUT()] +
                                [ir.CLOSE()] * 5 +
+                               [ir.INPUT()] +
                                [ir.OPEN()] * 3 +
                                [ir.CLOSE()] * 6,
                                maxdepth=9)
@@ -178,7 +179,8 @@ class FrontendTest(common.BFTestCase):
                                [ir.ADD(1),
                                 ir.OPEN(),
                                   ir.RIGHT(1),
-                                ir.CLOSE()])
+                                ir.CLOSE()],
+                               maxdepth=2)
 
         # Loop open after SET(0) => dead
         self._run_and_check_ir(",[-][>>]",
