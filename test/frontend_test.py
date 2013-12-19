@@ -79,9 +79,29 @@ class FrontendTest(common.BFTestCase):
         self._check_post_condition(mem, ir, maxdepth=maxdepth)
 
     def test_empty_input(self):
+        # The trivial program compiles to nothing
         self._run_and_check_ir("", [])
 
-    def test_basic_operations(self):
+    def test_single_instruction(self):
+        # Single brainfuck instructions can be valid programs
+        self._run_and_check_ir(">", [ir.RIGHT(1)])
+        self._run_and_check_ir("<", [ir.LEFT(1)])
+        self._run_and_check_ir(",", [ir.INPUT()])
+        self._run_and_check_ir(".", [ir.OUTPUT()])
+        self._run_and_check_ir("+", [ir.ADD(1)])
+        self._run_and_check_ir("-", [ir.SUB(1)])
+
+    def test_single_instruction_with_comment(self):
+        # Single instructions with comments can be valid programs
+        self._run_and_check_ir("a>", [ir.RIGHT(1)])
+        self._run_and_check_ir("<a", [ir.LEFT(1)])
+        self._run_and_check_ir("a.a", [ir.OUTPUT()])
+        self._run_and_check_ir("aa,", [ir.INPUT()])
+        self._run_and_check_ir("+aa", [ir.ADD(1)])
+        self._run_and_check_ir("aa-aa", [ir.SUB(1)])
+
+    def test_all_instructions(self):
+        # All instructions can live in the same program
         self._run_and_check_ir(">+.<-[,]",
                                [ir.RIGHT(1),
                                 ir.ADD(1),
@@ -91,8 +111,19 @@ class FrontendTest(common.BFTestCase):
                                 ir.OPEN(),
                                 ir.INPUT(),
                                 ir.CLOSE()], maxdepth=2)
+        self._run_and_check_ir("+,[->.]<",
+                               [ir.ADD(1),
+                                ir.INPUT(),
+                                ir.OPEN(),
+                                ir.SUB(1),
+                                ir.RIGHT(1),
+                                ir.OUTPUT(),
+                                ir.CLOSE(),
+                                ir.LEFT(1)], maxdepth=2)
 
     def test_nested_loops(self):
+        # Loops can be nested
+        # Loop depth is calculated
         self._run_and_check_ir("+[-[+<].]>[[[]+]+]+",
                                [ir.ADD(1),
                                 ir.OPEN(),
@@ -113,8 +144,18 @@ class FrontendTest(common.BFTestCase):
                                   ir.ADD(1),
                                 ir.CLOSE(),
                                 ir.ADD(1)], maxdepth=4)
+        self._run_and_check_ir("+[[[[[[[[.]]]]],[[[]]]]]]",
+                               [ir.ADD(1)] +
+                               [ir.OPEN()] * 8 +
+                               [ir.OUTPUT()] +
+                               [ir.CLOSE()] * 5 +
+                               [ir.OPEN()] * 3 +
+                               [ir.CLOSE()] * 6,
+                               maxdepth=9)
 
     def test_clear_loops(self):
+        # The [-] and [+] constructs become SET(0)
+        # These are not included when calculating loop depth
         self._run_and_check_ir(",[-].[+]",
                                [ir.INPUT(),
                                 ir.SET(0),
@@ -122,14 +163,37 @@ class FrontendTest(common.BFTestCase):
                                 ir.SET(0)], maxdepth=1)
 
     def test_loop_elimination(self):
-        self._run_and_check_ir("[.]", [])
-        self._run_and_check_ir("[+++]+[][+++].[-][+++]",
+        # Obviously dead loops are skipped entirely
+
+        # Loop open as first op => dead
+        self._run_and_check_ir("[+,-.]", [])
+        self._run_and_check_ir("[+[[[,]-]-]-.]", [])
+        self._run_and_check_ir("[+[[[,]-]-]-.][-]", [])
+        self._run_and_check_ir("[+[[[,]-]-]-.][+]", [])
+        self._run_and_check_ir("[+[[[,]-]-]-.][>>>]", [])
+        self._run_and_check_ir("[+[[[,]-]-]-.][>>>][.]", [])
+
+        # Loop open after loop close => dead
+        self._run_and_check_ir("+[>][.]",
                                [ir.ADD(1),
                                 ir.OPEN(),
-                                ir.CLOSE(),
-                                ir.OUTPUT(),
-                                ir.SET(0)], maxdepth=2)
-        self._run_and_check_ir("[-][+++]", [])
+                                  ir.RIGHT(1),
+                                ir.CLOSE()])
+
+        # Loop open after SET(0) => dead
+        self._run_and_check_ir(",[-][>>]",
+                               [ir.INPUT(), ir.SET(0)])
+        self._run_and_check_ir(",[-][>>][..]",
+                               [ir.INPUT(), ir.SET(0)])
+        self._run_and_check_ir(",[-][>>].",
+                               [ir.INPUT(), ir.SET(0), ir.OUTPUT()])
+
+        # But open after SET(x) where x > 0 => alive
+        self._run_and_check_ir(",[-]+[>>]",
+                               [ir.INPUT(), ir.SET(1),
+                                ir.OPEN(), ir.RIGHT(2), ir.CLOSE()],
+                               maxdepth=2)
+
 
     def test_cancellation(self):
         self._run_and_check_ir("+++-->><-+<-,  <>-++-+-<><>.",
