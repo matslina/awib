@@ -196,62 +196,36 @@ class FrontendTest(common.BFTestCase):
                                 ir.OPEN(), ir.RIGHT(2), ir.CLOSE()],
                                maxdepth=2)
 
+    ##
+    ## Cancellation
+    ##
 
-    def test_cancellation(self):
-        self._run_and_check_ir("+++-->><-+<-,  <>-++-+-<><>.",
-                               [ir.INPUT(), ir.OUTPUT()])
+    def test_cancellation_of_basic_instructions(self):
+        # Two pairs of the basic brainfuck instructions are mutually
+        # cancelling
+
+        # Pairs of cancelling instructions are reduced
+        self._run_and_check_ir("+-", [])
+        self._run_and_check_ir("+-", [])
+        self._run_and_check_ir("><", [])
+        self._run_and_check_ir("<>", [])
+
+        # Longer sequences of cancelling instructions are reduced
         self._run_and_check_ir("-+<>+-><", [])
         self._run_and_check_ir(".<<<<>>>>++++----.",
                                [ir.OUTPUT(), ir.OUTPUT()])
 
-    def test_contraction(self):
-        self._run_and_check_ir("+++", [ir.ADD(3)])
-        self._run_and_check_ir(['+']*255, [ir.ADD(255)])
-        self._run_and_check_ir(['+']*256, [])
-        self._run_and_check_ir("---", [ir.SUB(3)])
-        self._run_and_check_ir(['-']*255, [ir.SUB(255)])
-        self._run_and_check_ir(['-']*256, [])
-        self._run_and_check_ir("<<<", [ir.LEFT(3)])
-        self._run_and_check_ir(['<']*128, [ir.LEFT(128)])
-        self._run_and_check_ir(">>>", [ir.RIGHT(3)])
-        self._run_and_check_ir(['>']*128, [ir.RIGHT(128)])
+        # The cancelling instructions do not have to be immediately adjacent
+        self._run_and_check_ir("+++-->><-+<-,  <>-++-+-<><>.",
+                               [ir.INPUT(), ir.OUTPUT()])
+        self._run_and_check_ir(",>>+++>+--+<----+<<++>><<--",
+                               [ir.INPUT()])
 
-        # overflow
-        self._run_and_check_ir(['>']*255, [ir.RIGHT(255)])
-        self._run_and_check_ir(['>']*256, [ir.RIGHT(255), ir.RIGHT(1)])
-        self._run_and_check_ir(['>']*257, [ir.RIGHT(255), ir.RIGHT(2)])
-        self._run_and_check_ir(['<']*255, [ir.LEFT(255)])
-        self._run_and_check_ir(['<']*256, [ir.LEFT(255), ir.LEFT(1)])
-        self._run_and_check_ir(['<']*257, [ir.LEFT(255), ir.LEFT(2)])
+    def test_cancellation_partial(self):
+        # Cancellation can be partial, leaving part of the cancelling
+        # instructions behind.
 
-    def test_set(self):
-        # simple cases
-        self._run_and_check_ir(',[-]-', [ir.INPUT(), ir.SET(255)])
-        self._run_and_check_ir(',[+]', [ir.INPUT(), ir.SET(0)])
-        self._run_and_check_ir(',[-]+', [ir.INPUT(), ir.SET(1)])
-        self._run_and_check_ir(',[+]++', [ir.INPUT(), ir.SET(2)])
-        self._run_and_check_ir(',[-]+++', [ir.INPUT(), ir.SET(3)])
-        self._run_and_check_ir(',[+]-', [ir.INPUT(), ir.SET(255)])
-        self._run_and_check_ir(',[-]--', [ir.INPUT(), ir.SET(254)])
-        self._run_and_check_ir(',[+]---', [ir.INPUT(), ir.SET(253)])
-
-        # overflow
-        self._run_and_check_ir(',[-]' + '+' * 255,
-                               [ir.INPUT(), ir.SET(255)])
-        self._run_and_check_ir(',[+]' + '+' * 256,
-                               [ir.INPUT(), ir.SET(0)])
-        self._run_and_check_ir(',[-]' + '+' * 257,
-                               [ir.INPUT(), ir.SET(1)])
-
-        self._run_and_check_ir(',[-]' + '-' * 255,
-                               [ir.INPUT(), ir.SET(1)])
-        self._run_and_check_ir(',[+]' + '-' * 256,
-                               [ir.INPUT(), ir.SET(0)])
-        self._run_and_check_ir(',[-]' + '-' * 257,
-                               [ir.INPUT(), ir.SET(255)])
-
-    def test_contraction_and_cancellation(self):
-        # basic cases
+        # The basic brainfuck instructions
         self._run_and_check_ir("++++--", [ir.ADD(2)])
         self._run_and_check_ir("--++++", [ir.ADD(2)])
         self._run_and_check_ir("++----", [ir.SUB(2)])
@@ -261,7 +235,8 @@ class FrontendTest(common.BFTestCase):
         self._run_and_check_ir(">><<<<", [ir.LEFT(2)])
         self._run_and_check_ir("<<<<>>", [ir.LEFT(2)])
 
-        # cases triggering argument overflow
+        # Cases with argument overflow, i.e. >255 of the same
+        # instructions in a row, are also cancelled correctly.
         self._run_and_check_ir(['>']*258 + ['<', '<'],
                                [ir.RIGHT(255),
                                 ir.RIGHT(1)])
@@ -278,6 +253,57 @@ class FrontendTest(common.BFTestCase):
         self._run_and_check_ir(['<']*258 + ['>', '>', '>', '>'],
                                [ir.LEFT(254)])
 
+    ##
+    ## Contraction
+    ##
+
+    def test_contraction_simple_cases(self):
+        # Sequences of multiple brainfuck instructions can be
+        # contracted into single bytecode operations
+        self._run_and_check_ir("++", [ir.ADD(2)])
+        self._run_and_check_ir("+++", [ir.ADD(3)])
+        self._run_and_check_ir("+" * 128, [ir.ADD(128)])
+        self._run_and_check_ir("--", [ir.SUB(2)])
+        self._run_and_check_ir("---", [ir.SUB(3)])
+        self._run_and_check_ir("-" * 128, [ir.SUB(128)])
+        self._run_and_check_ir("<<", [ir.LEFT(2)])
+        self._run_and_check_ir("<<<", [ir.LEFT(3)])
+        self._run_and_check_ir("<" * 128, [ir.LEFT(128)])
+        self._run_and_check_ir(">>", [ir.RIGHT(2)])
+        self._run_and_check_ir(">>>", [ir.RIGHT(3)])
+        self._run_and_check_ir(">" * 128, [ir.RIGHT(128)])
+
+    def test_contraction_overflow_arithmetic(self):
+        # Arithmetic operations are removed on argument overflow
+        self._run_and_check_ir(['+']*255, [ir.ADD(255)])
+        self._run_and_check_ir(['+']*256, [])
+        self._run_and_check_ir(['+']*257, [ir.ADD(1)])
+        self._run_and_check_ir(['-']*255, [ir.SUB(255)])
+        self._run_and_check_ir(['-']*256, [])
+        self._run_and_check_ir(['-']*257, [ir.SUB(1)])
+
+    def test_contraction_overflow_movement(self):
+        # Argument overflow on movement operations only add more
+        # operations
+        self._run_and_check_ir(['>']*255, [ir.RIGHT(255)])
+        self._run_and_check_ir(['>']*256, [ir.RIGHT(255), ir.RIGHT(1)])
+        self._run_and_check_ir(['>']*257, [ir.RIGHT(255), ir.RIGHT(2)])
+        self._run_and_check_ir(['<']*255, [ir.LEFT(255)])
+        self._run_and_check_ir(['<']*256, [ir.LEFT(255), ir.LEFT(1)])
+        self._run_and_check_ir(['<']*257, [ir.LEFT(255), ir.LEFT(2)])
+
+    def test_contraction_set_arithmetic(self):
+        # Arithmetic ops after a SET() are collapsed into the SET()
+        self._run_and_check_ir(',[-]--', [ir.INPUT(), ir.SET(254)])
+        self._run_and_check_ir(',[-]-', [ir.INPUT(), ir.SET(255)])
+        self._run_and_check_ir(',[-]', [ir.INPUT(), ir.SET(0)])
+        self._run_and_check_ir(',[-]+', [ir.INPUT(), ir.SET(1)])
+        self._run_and_check_ir(',[-]++', [ir.INPUT(), ir.SET(2)])
+        self._run_and_check_ir(',[+]--', [ir.INPUT(), ir.SET(254)])
+        self._run_and_check_ir(',[+]-', [ir.INPUT(), ir.SET(255)])
+        self._run_and_check_ir(',[+]', [ir.INPUT(), ir.SET(0)])
+        self._run_and_check_ir(',[+]+', [ir.INPUT(), ir.SET(1)])
+        self._run_and_check_ir(',[+]++', [ir.INPUT(), ir.SET(2)])
 
     ##
     ## Target string
