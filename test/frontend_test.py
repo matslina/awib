@@ -253,6 +253,16 @@ class FrontendTest(common.BFTestCase):
         self._run_and_check_ir(['<']*258 + ['>', '>', '>', '>'],
                                [ir.LEFT(254)])
 
+    def test_cancellation_arithmetic_set(self):
+        # SET() invalidates all immediately preceding arithmetic
+        # operations.
+        self._run_and_check_ir('+[-]', [ir.SET(0)])
+        self._run_and_check_ir('+[+]', [ir.SET(0)])
+        self._run_and_check_ir('++++++++++[-]', [ir.SET(0)])
+        self._run_and_check_ir('++++++++++[+]', [ir.SET(0)])
+        self._run_and_check_ir('----------[-]++', [ir.SET(2)])
+        self._run_and_check_ir('++++++++++[+]++', [ir.SET(2)])
+
     ##
     ## Contraction
     ##

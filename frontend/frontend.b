@@ -320,25 +320,33 @@
 % (code) SET/ADD(?) 0 *0 0 0
 ]
 
-# Optimize
+# Cancellation
 % (code P i Q j) 0 *0   (where P(i) and Q(j) are the two most recent ops)
 
-# Cancellation
 # if P/Q in (LEFT/RIGHT RIGHT/LEFT ADD/SUB SUB/ADD) and j == 1
 #    remove Q(j) and decrement i
 #    if dec(i) == 0 then remove P(i)
-<+<-[>-]>[>]<<+>[
+>>+<<<+<-[>-]>[>]<<+>[
  # j == 1
- % P i Q 1 *1 0
+ % P i Q 1 *1 0 0 1
  <<<[>>-]>>[>>]<<[->-<]+>[-
   # i != 0
   <-<[->+<<<+>>]
-  % add(P Q) i *0 Q 0 0
+  % add(P Q) i *0 Q 0 0 0 1
   +<<----[>>-]>>[>>]<<[->>>+<<<]+<<-------[>>-]>>[>>]<<[->>>+<<<]
   >[-<+<<->>>]+<<<+++++++++++>>>>>
-  % P i Q 1 0 *c   (where c = add(P Q) in (add(LEFT RIGHT) add(ADD SUB)))
-  [-<<-<[-]+<-[>-]>[>]<[-<<[-]]>]<]]
-% (code) *0 0 0
+  % P i Q 1 0 *c 0 1  (where c = add(P Q) in (add(LEFT RIGHT) add(ADD SUB)))
+  [->>-<<<<-<[-]+<-[>-]>[>]<[-<<[-]]>]<]]>>>
+% (code) 0 0 0 *z    (where z = 1 if we should attempt further optimizations)
+
+#if P in (ADD SUB) and Q == SET then remove P
+[>+<-<<<+<<---------[>>-]>>[>>]<<[
+  # Q == SET
+  >>>>-<<<<
+  -<<+<<-[>>-]>>[>>]<<[->>>+<<<]+<<--[>>-]>>[>>]<<[->>>+<<<]<<+++>>>>>
+  % P i 0 j 0 *c 0 0 1   (where c = P in (ADD SUB))
+  [-<<<<<[-]>[-]>>[-<<+>>]]<]<<+++++++++>>>>>]
+% (code) 0 0 0 *0 z  (where z = 1 if we should attempt further optimizations)
 
 # if P/Q in (SET/ADD or SET/SUB) then do wrapping inc/dec
 # TODO: ^
@@ -346,7 +354,9 @@
 # Contraction
 # TODO: move down and generalize the contraction code
 
->>>]
+>[-]<]
+
+
 
 % 8(0) (code) 0 0 X *0    (where X may be the last byte read)
 # read next byte and and break if EOF
