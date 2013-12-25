@@ -262,27 +262,15 @@
 #if previous op is SUB(i)
 #   if i is 255 then remove previous op
 #   else overwrite with SUB(inc(i))
-#elif previous op is SET(i) then overwrite with SET(dec(i) mod 256)
 #else append SUB(1)
 >[
-+>+>+<<<<<<<
----[+++[->>+<<]>>--->>>->-<<<<<<]>>
-------[+++++++++[-<<+>>]<<--------->>>>>->>-<<<<<]<<+++++++++>>>>
-% (code P i) 0 0 *0 a b c    (where P(i) is previous op
-                                    a==1 iff P is SUB or SET
-                                    b==1 iff P is SUB
-                                    c==1 iff P is SET)
-+>[
--<-<<++++++++++++++++[-<---------------->]
-+<+[>-]>[>]++++++++++++++++[-<<++++++++++++++++>>]<<->[->>>+<<<]
-+<[>-]>[>]<[->>+<<]
-% (code P i) *0 0 e d b c   (where d==1 iff i==255
-                                   e==1 iff i==0)
->>>>>[-<<[-]<[-<<++++++++++++++++[-<++++++++++++++++>]>>]<<<->>>>>>]
-<[-<<[-]<<<+>>>>[-<<<<-[-]<[-]>>>]>]<]
-% (code) 0 0 g *0     (where g==1 iff previous op is neither SUB not SET)
-<[-<+<+++>>>>]
-]<
+-<<<<<[->>+>+<<<]>>[-<<+>>]<[->+>>+<<<]>[-<+>]
+% (code) *0 P i 0        (where P(i) = previous op)
+>---[<+++>+++[-]+>[-]>]>
+[<++++++++++++++++[->----------------<]>+>+<
+[<<<+>>++++++++++++++++[->++++++++++++++++<]>[-]>-<]
+>[-<<<<[-]<--->>>]<]
+ ]<
 % (code) SET/SUB(?) 0 *0 0 0
 ]
 
@@ -297,27 +285,16 @@
 #if previous op is ADD(i)
 #   if i is 255 then remove previous op
 #   else overwrite with ADD(inc(i))
-# if previous op is SET(i) then overwrite with SET(inc(i) mod 256)
 #else append ADD(1)
 >[
-<++<
-# (code P i) 0 *0 2 1 0   (where P(i) is previous op)
-<<<-[+[->>+<<]>>->>->-<<<<<]>>
---------[+++++++++[-<<+>>]<<--------->>>>-<<]<<+++++++++>>
-% (code P i) *0 0 a b
-++++++++++++++++[-<---------------->]+<+[>-]>[>]<[->+<]
-++++++++++++++++[-<++++++++++++++++>]<->
-% (code P i) *0 c a b     (where a==1 iff P is ADD or SET
-                                 b==1 iff P is ADD
-                                 c==1 iff i is 255)
-+>>[ add or set: no ADD(1); inc(i)  -<<-<+>>
-     [ prev i 255: clear i  -<<[-]>>>>
-       [ prev ADD: remove prev completely -<<<<<[-]>>>]
-     <<]>]>[-]<<[-]<
-% (code) *d 0 0 0   (where d==1 iff previous op is neither ADD nor SET)
-[>+>]>>
+-<<<<<[->>+>+<<<]>>[-<<+>>]<[->+>>+<<<]>[-<+>]
+% (code) *0 P i 0        (where P(i) = previous op)
+>-[<+>+[-]+>[-]>]>
+[<++++++++++++++++[->----------------<]>+>+<
+[<<<+>>++++++++++++++++[->++++++++++++++++<]>[-]>-<]
+>[-<<<<[-]<->>>]<]
 ]<
-% (code) SET/ADD(?) 0 *0 0 0
+% (code) ADD(?) 0 *0 0 0
 ]
 
 # Cancellation
@@ -344,9 +321,28 @@
   # Q == SET
   >>>>-<<<<
   -<<+<<-[>>-]>>[>>]<<[->>>+<<<]+<<--[>>-]>>[>>]<<[->>>+<<<]<<+++>>>>>
-  % P i 0 j 0 *c 0 0 1   (where c = P in (ADD SUB))
+  % P i 0 j 0 *c 0 0 0   (where c = P in (ADD SUB))
   [-<<<<<[-]>[-]>>[-<<+>>]]<]<<+++++++++>>>>>]
 % (code) 0 0 0 *0 z  (where z = 1 if we should attempt further optimizations)
+
+# if P == SET and Q(j) in (ADD(1) SUB(1)) then inc/dec i and remove Q(j)
++>[-
+<<<<+<<<<---------[>>>>-]>>>>[>>>>]<<<<<<<<+++++++++>>>>[
+ # P == SET
+ % 9 i Q j *1 0 0 1 0
+ <-[>-]>[>]<<+>[
+  # j == 1
+  <<-[>>-]>>[>>]<<<<+>>[-
+   # Q == ADD
+   >>>-<<<<-<<<+++++++[->----------------<]>+[>-]>[>]+<[->-<]>
+   [-<++++++++++++++++[-<++++++++++++++++>]>]
+   <<<+++++++++>>]
+  +<<---[>>-]>>[>>]<<<<+++>>[-
+   # Q == SUB
+   >>>-<<<<-<--
+   <[>-]>[>]<[+++++++++++++++[-<++++++++++++++++>]]<->
+]]]>>>>]<
+% (code) 0 0 0 *z 0  (where z = 1 if we should attempt further optimizations)
 
 # if P/Q in (SET/ADD or SET/SUB) then do wrapping inc/dec
 # TODO: ^
@@ -354,7 +350,7 @@
 # Contraction
 # TODO: move down and generalize the contraction code
 
->[-]<]
+[-]]
 
 
 
