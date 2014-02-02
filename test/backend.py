@@ -171,6 +171,13 @@ class BackendTestCase(common.BFTestCase):
         self.run_ir([ir.ADD(12), ir.SET(2), ir.OUTPUT()], [], [2])
         self.run_ir([ir.ADD(12), ir.SET(255), ir.OUTPUT()], [], [255])
 
+    def test_mul(self):
+        self.run_ir([ir.ADD(4), ir.RMUL(2, 4), ir.RIGHT(2), ir.OUTPUT()],
+                    [], [16])
+        self.run_ir([ir.ADD(4), ir.RIGHT(2), ir.ADD(7), ir.LMUL(2, 254),
+                     ir.LEFT(2), ir.OUTPUT()],
+                    [], [246])
+
 
 class LangGenericTestCase(BackendTestCase):
     BACKEND_PATH = "lang_generic/backend.b"
