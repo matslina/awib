@@ -5,20 +5,24 @@ In addition to making awib an option for developers on nearly any platform,
 this backend, in combination with a good C compiler, turns out to produce
 very fast programs.
 
-The backend operates by outputting a header which sets up memory and defines
-a total of nine macros. Each macro corresponds to one of the awib bytecode
-operation. The header is as follows:
+The backend operates by outputting a header which sets up memory and
+defines a total of thirteen macros. Each macro corresponds to one of
+the awib bytecode operation. The header is as follows:
 
  #include <stdio.h>
- #define e9(x) *p=x;
- #define e8(x) }
- #define e7(x) while(*p){
- #define e6(x) p+=x;
- #define e5(x) p-=x;
- #define e4(x) putchar(*p);
- #define e3(x) *p-=x;
- #define e2(x) c=getchar();if(c>=0)*p=c;
- #define e1(x) *p+=x;
+ #define eM(x) *p*x;
+ #define eL(x) *(p+x)+=
+ #define eK(x) *p*x;
+ #define eJ(x) *(p-x)+=
+ #define eI(x) *p=x;
+ #define eH(x) }
+ #define eG(x) while(*p){
+ #define eF(x) p+=x;
+ #define eE(x) p-=x;
+ #define eD(x) putchar(*p);
+ #define eC(x) *p-=x;
+ #define eB(x) c=getchar();if(c>=0)*p=c;
+ #define eA(x) *p+=x;
  char buf[0xffff];
  int main(){
  char *p=buf;
