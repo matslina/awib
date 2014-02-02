@@ -344,15 +344,104 @@
 ]]]>>>>]<
 % (code) 0 0 0 *z 0  (where z = 1 if we should attempt further optimizations)
 
-# if P/Q in (SET/ADD or SET/SUB) then do wrapping inc/dec
-# TODO: ^
+# if P == CLOSE then try the copy loop optimization
+[
+ -<<<+<<--------[>>-]>>[>>]<<<<++++++++>>[# P == CLOSE
+  ->>>>>>>++++++++<<++++++++[-<++++++++++++++++>]<-[-<+<+>>]
+  <<<<<+<-------
+  % (code) Q j *1 1 0 0 128 128 *0 0 0 P
+  <<[>>-]>>[>>]<<[->-<]>[-<+>]<
+  [ # determine if loop can be optimized
+   % (code) *k 0 0 0 l r a 0 0 (code)
+   % where k = 1 iff next op should be inspected
+   %       l = sub(127 num_left)
+   %       r = sub(127 num_right)
+   %       a = 1 iff SUB(1) on cell 0 processed
+   <<-[>>-]>>[>>]<<[# P == ADD
+    >>>>[->->>+<<<]+>[<-]<[<]>[ # l == r: kill l ->>>[-<<+>>]<<<]
+    >>>[-<<+<+>>>]<<<<<<+<-]+
+   <<--[>>-]>>[>>]<<[# P == SUB
+    >>>>[->->>+<<<]+>[<-]<[<]>[ # l == r
+     >>[<<-]<<[<<]>+>[-<<<<<-[>-]>[>]<<+>[->>>->>>+<<<<<<]+>>>>]
+     <[->>>>[-<<+>>]<<<<]>]
+     >>>[-<<+<+>>>]<<<<<<+<-]+
+   <<--[>>-]>>[>>]<<[# P == LEFT
+    -<[->+>>>+>-[<-]<[<]>[-<<<<[->+<]>>>>]<<<<]>[-<+>]>+<]+
+   <<-[>>-]>>[>>]<<[ # P == RIGHT
+    -<[->+>>>+>>-[<<-]<<[<<]>>[-<<<<[->+<]>>>>]<<<<]>[-<+>]>+<]
+   % (code) sub(P 6) i *0 q 0 0 l r a 0 0 (code) 0
+   % where q = P in (ADD SUB LEFT RIGHT)
 
-# Contraction
-# TODO: move down and generalize the contraction code
+   # keep going if q==1 && l!=0 && r!=0 && next op exists
+   <[->>>>>>>>>+<<<<<<<<<]<++++++[->>>>>>>>>+<<<<<<<<<]
+   +<<[>>->>>+<<<]>>[>>]<<[-]>>>>>>
+   [[-<<+>>]>[[-<<+>>]<<<<+>>>>]<]>[-<<+>>]>[-<<+>>]<<<<<
+   ---[<<<->>>+++[-]]<<<+
+   % (code) *k 0 0 0 l r a 0 0 P i (code)
+  ]
 
-[-]]
+  >>>>>>>>+>-------[<-]<[<]>>+++++++
+  <<<[->>+<<]+<<[-<+>>-<]>[>-]>[>]<[->>+<<]>+>---[<-]<[<]>>+++[-]
+  <<<<<[->>+<<]>>[-]>+>
+  % (code) 0 0 0 0 0 0 1 *w 0 (loop)
+  % where w = 1 iff copy loop optimization can be applied
 
+  [<->->>[-]>[-]<<<<<<<<<+>+>+>+>+>>>>>>
+   [ # replace loop with LMUL/RMUL
+    % (code) 0 1 ::: 1 0 0 n d 0 *P i (loop)
+    % where d = offset to current cell
+    %       n = 1 iff offset is negative
+    <+>-[--[--[-[++++++[-]<->]<[ # RIGHT(i)
+     ->>[<<+<[>-]>[>]<[-<<[-]>>]<+>>>-]<<
+    ]>]<[ # LEFT(i)
+     ->>[<<+<[>-]>[>]<[-<<[-]+>>]<->>>-]<<
+    ]>]<[ # SUB(i)
+     % (code) 0 1 ::: 1 0 0 n d *1 0 i (loop)
+     <[>-]>[>]+<[->-<]>[ # d != 0
+      +++++++++++++++[-<<<<++++++++++++++++>>>>]>[-<<<<<->>>>>]<]<
+     % (code) 0 1 ::: 1 0 sub(256 i) n d *0 0 0 (loop)
+    ]>]<[ # ADD(i)
+     % (code) 0 1 ::: 1 0 0 n d *1 0 i (loop)
+     <[>-]>[>]+<[->-<]>[ # d != 0
+      ->[-<<<<<+>>>>>]<]<
+     % (code) 0 1 ::: 1 0 i n d *0 0 0 (loop)
+    ]
 
+    % (code) 0 1 ::: 1 0 y n d *0 0 i (loop)
+    % where y!=0 iff MUL op should be appended to code
+    %       and y is the second op argument
+
+    <<<[ # y!=0
+     <+>>[ # n=1 so d negative
+      <<-<[<]++++++++++>->++++++++++>->->[>]
+      >>>[+<<<<[<]<<<+>>>>[>]>>>>>-<<]>+<<-]
+     <<[ # n=0 so d positive
+      -<[<]++++++++++++>->++++++++++++>->->[>]
+      >>>[->>+<<<<<<[<]<<<+>>>>[>]>>>]
+      <<<]
+     >[-<<[<]<+>>[>]>]
+     % (code) LMUL/RMUL y 0 1 ::: 1 0 *0 0 0 n d 0? (loop)
+    ]
+
+    % (code) 0 1 ::: 1 0 *0 n d 0 0 i (loop)
+    >[>[+>>-<<]>+<<-]>[->>+<<]
+    <<+<+>>>>>>>
+    % (code) 0 1 ::: 1 0 0 n d 0 *(loop)
+   ]
+
+   % (code) 0 1 ::: 1 0 0 n 0 0 *0
+   <<<[-]<<<[-<]+++++++++>>>>>>>>>
+   % (code) SET(0) 0 0 0 0 0 0 0 *0
+  ]
+
+  % (code) 0 0 0 0 0 0 v *0 0 (loop)
+  % where v = 1 iff copy loop optimization was not applied
+  <[->>>[[-<<<<<<<<<+>>>>>>>>>]>[-<<<<<<<<<+>>>>>>>>>]>]
+    <<<]<<<<<<
+  ]>>>
+ % (code) 0 0 0 *0 0
+ ]
+]
 
 % 8(0) (code) 0 0 X *0    (where X may be the last byte read)
 # read next byte and and break if EOF

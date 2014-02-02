@@ -41,32 +41,26 @@ class FrontendTest(common.BFTestCase):
         # more sanity
         self.assert_( not (len(mem) < i+3), "maximum loop depth is missing")
         self.assert_( not (len(mem) > i+3), "junk data beyond max loop depth")
-        self.assertEquals((i-3)/2, len(code), "expected %d ops, got %d" %
-                          (len(code), (i-3)/2))
         if maxdepth is not None:
             Mm = mem[i+1]*0xff + mem[i+2]
             self.assertEquals(Mm, maxdepth, "wrong max depth, got %d not %d" %
                               (Mm, maxdepth))
 
+
         compile = mem[3:i]
 
         # compare frontend output with expected byte code
-        for i, expected in enumerate(code):
-
-            op_code = compile[2*i]
-            op_arg = compile[2*i + 1]
-
-            if op_code not in ir.code_to_op:
-                self.fail("invalid code at pos %d: %d" % (i, op_code))
-
-            try:
-                op = ir.code_to_op[op_code](op_arg)
-            except ValueError, ve:
-                self.fail("invalid op at pos %d: %s" % (i, ve))
-
-            if expected.__class__ != op.__class__ or expected.arg != op.arg:
-                self.fail("expected %r but got %r at op %d" %
+        try:
+            compile = ir.parse_codes(mem[3:i])
+        except ValueError, ve:
+            self.fail("broken bytecode: %s" % ve)
+        for i, (op, expected) in enumerate(zip(compile, code)):
+            if op != expected:
+                self.fail("expected %r but got %r at pos %d" %
                           (expected, op, i))
+        if len(compile) != len(code):
+            self.fail("expected %d ops but got %d; all %d matched though" %
+                      (len(code), len(compile), min(len(code), len(compile))))
 
     ##
     ## Byte code compilation
@@ -74,7 +68,7 @@ class FrontendTest(common.BFTestCase):
 
     def _run_and_check_ir(self, program, ir, maxdepth=1):
         out, mem = self.run_bf(self.code, program,
-                               precondition=[1], steps=5000000)
+                               precondition=[1], steps=10000000)
         self.assertEquals(out, [], "frontend should not produce output")
         self._check_post_condition(mem, ir, maxdepth=maxdepth)
 
@@ -314,6 +308,108 @@ class FrontendTest(common.BFTestCase):
         self._run_and_check_ir(',[+]', [ir.INPUT(), ir.SET(0)])
         self._run_and_check_ir(',[+]+', [ir.INPUT(), ir.SET(1)])
         self._run_and_check_ir(',[+]++', [ir.INPUT(), ir.SET(2)])
+
+
+    ##
+    ## Copy loops
+    ##
+
+    def test_copy_loop_not_optimizeable(self):
+        # loop must end where it started
+        self._run_and_check_ir(',[->+]',
+                               [ir.INPUT(), ir.OPEN(), ir.SUB(1), ir.RIGHT(1),
+                                ir.ADD(1), ir.CLOSE()],
+                               maxdepth=2)
+        self._run_and_check_ir(',[->+<<]',
+                               [ir.INPUT(), ir.OPEN(), ir.SUB(1), ir.RIGHT(1),
+                                ir.ADD(1), ir.LEFT(2), ir.CLOSE()],
+                               maxdepth=2)
+
+        # must subtract 1 from cell 0 exactly once
+        self._run_and_check_ir(',[->+<-]',
+                               [ir.INPUT(), ir.OPEN(), ir.SUB(1), ir.RIGHT(1),
+                                ir.ADD(1), ir.LEFT(1), ir.SUB(1), ir.CLOSE()],
+                               maxdepth=2)
+        self._run_and_check_ir(',[+>+<--]',
+                               [ir.INPUT(), ir.OPEN(), ir.ADD(1), ir.RIGHT(1),
+                                ir.ADD(1), ir.LEFT(1), ir.SUB(2), ir.CLOSE()],
+                               maxdepth=2)
+        self._run_and_check_ir(',[->+<+<->-]',
+                               [ir.INPUT(), ir.OPEN(), ir.SUB(1), ir.RIGHT(1),
+                                ir.ADD(1), ir.LEFT(1), ir.ADD(1), ir.LEFT(1),
+                                ir.SUB(1), ir.RIGHT(1), ir.SUB(1), ir.CLOSE()],
+                               maxdepth=2)
+
+        # must be fewer than 127 < and 127 >
+        self._run_and_check_ir(',[-' + '>' * 127 + '+' + '<' * 127 + ']',
+                               [ir.INPUT(), ir.OPEN(), ir.SUB(1), ir.RIGHT(127),
+                                ir.ADD(1), ir.LEFT(127), ir.CLOSE()],
+                               maxdepth=2)
+        self._run_and_check_ir(',[-' + '<' * 127 + '+' + '>' * 127 + ']',
+                               [ir.INPUT(), ir.OPEN(), ir.SUB(1), ir.LEFT(127),
+                                ir.ADD(1), ir.RIGHT(127), ir.CLOSE()],
+                               maxdepth=2)
+
+    def test_copy_loop_simple(self):
+        # single cell copy loops
+        self._run_and_check_ir(',[->+<]',
+                               [ir.INPUT(), ir.RMUL(1,1), ir.SET(0)])
+        self._run_and_check_ir(',[->-<]',
+                               [ir.INPUT(), ir.RMUL(1,255), ir.SET(0)])
+        self._run_and_check_ir(',[-<+>]',
+                               [ir.INPUT(), ir.LMUL(1,1), ir.SET(0)])
+        self._run_and_check_ir(',[-<->]',
+                               [ir.INPUT(), ir.LMUL(1,255), ir.SET(0)])
+        self._run_and_check_ir(',[<->-]',
+                               [ir.INPUT(), ir.LMUL(1,255), ir.SET(0)])
+        self._run_and_check_ir(',[>+<-]',
+                               [ir.INPUT(), ir.RMUL(1,1), ir.SET(0)])
+
+    def test_copy_loop_multiple_separate_offsets(self):
+        # 2 offsets
+        self._run_and_check_ir(',[->+>+<<]',
+                               [ir.INPUT(), ir.RMUL(1,1), ir.RMUL(2,1),
+                                ir.SET(0)])
+        self._run_and_check_ir(',[->->-<<]',
+                               [ir.INPUT(), ir.RMUL(1,255), ir.RMUL(2,255),
+                                ir.SET(0)])
+        self._run_and_check_ir(',[<+>>-<-]',
+                               [ir.INPUT(), ir.LMUL(1,1), ir.RMUL(1,255),
+                                ir.SET(0)])
+
+        # many but less than 127 offsets
+        self._run_and_check_ir(',[-' + '<+' * 126 + '>' * 126 + ']',
+                               [ir.INPUT()] +
+                               [ir.LMUL(i,1) for i in range(1,127)] +
+                               [ir.SET(0)])
+        self._run_and_check_ir(',[<<<+>>>>>-<<<<<<<+>>>>>-<+>]',
+                               [ir.INPUT(),
+                                ir.LMUL(3, 1), ir.RMUL(2,255),
+                                ir.LMUL(5, 1), ir.LMUL(1, 1),
+                                ir.SET(0)])
+
+    def test_copy_loop_multiple_repeated_offsets(self):
+        # repeated offsets result in multiple LMUL/RMUL
+        self._run_and_check_ir(',[->+>++<+++>----<<]',
+                               [ir.INPUT(),
+                                ir.RMUL(1,1), ir.RMUL(2,2),
+                                ir.RMUL(1,3), ir.RMUL(2,252),
+                                ir.SET(0)])
+
+    def test_copy_loop_wrap_around(self):
+        self._run_and_check_ir(',[->' + '+' * 255 + '<]',
+                               [ir.INPUT(), ir.RMUL(1, 255), ir.SET(0)])
+        self._run_and_check_ir(',[->' + '+' * 256 + '<]',
+                               [ir.INPUT(), ir.SET(0)])
+        self._run_and_check_ir(',[->' + '+' * 257 + '<]',
+                               [ir.INPUT(), ir.RMUL(1, 1), ir.SET(0)])
+        self._run_and_check_ir(',[-<<' + '-' * 255 + '>>]',
+                               [ir.INPUT(), ir.LMUL(2, 1), ir.SET(0)])
+        self._run_and_check_ir(',[-<<' + '-' * 256 + '>>]',
+                               [ir.INPUT(), ir.SET(0)])
+        self._run_and_check_ir(',[-<<' + '-' * 257 + '>>]',
+                               [ir.INPUT(), ir.LMUL(2, 255), ir.SET(0)])
+
 
     ##
     ## Target string
