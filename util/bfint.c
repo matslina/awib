@@ -26,6 +26,7 @@ cell_t buf[65535];
 char program[65535];
 char *stack[10000];
 int eof_behaviour = 2;
+int linecolmap[65535][2];
 
 void usage(FILE *out, char *name) {
   fprintf(out,"Usage: %s <program> [EOF-behaviour]\n",name);
@@ -115,8 +116,9 @@ int run() {
 
     case('-'):
       if(*p<-256){
-	fprintf(stderr,"bad loop detected at instruction %d\n",
-		(int)(ip-program));
+	fprintf(stderr,"sub below -255 at line %d column %d\n",
+		linecolmap[(int)(ip-program)][0],
+		linecolmap[(int)(ip-program)][1]);
 	return -1;
       }
       *p -= 1;
@@ -134,8 +136,9 @@ int run() {
       if( *p==0 ) {
 	tmp = jump_past(ip);
 	if( tmp==NULL ) {
-	  fprintf(stderr,"Error: Unbalanced loop at instruction %d.\n",
-		  (int)(ip-program));
+	  fprintf(stderr,"Error: Unbalanced loop at line %d column %d.\n",
+		  linecolmap[(int)(ip-program)][0],
+                  linecolmap[(int)(ip-program)][1]);
 	  return -1;
 	}
 	ip = tmp;
@@ -184,6 +187,7 @@ int run() {
 int main(int argc, char *argv[]) {
   FILE *prog_file;
   int i,c;
+  int line, column;
 
   /* Read program into program[], catch help-requests and whatnot. */
   if( !argv[1] ){
@@ -199,9 +203,20 @@ int main(int argc, char *argv[]) {
     perror("Error: Could not open program file");
     exit(-1);
   }
-  for( i=0; (c=fgetc(prog_file))!=EOF && i<sizeof(program); )
-    if(c=='<'||c=='>'||c==','||c=='.'||c=='-'||c=='+'||c=='['||c==']')
+
+  line = 1;
+  column = 0;
+  for( i=0; (c=fgetc(prog_file))!=EOF && i<sizeof(program); ) {
+    if(c=='<'||c=='>'||c==','||c=='.'||c=='-'||c=='+'||c=='['||c==']') {
       program[i++] = c;
+      linecolmap[i][0] = line;
+      linecolmap[i][1] = column;
+      column++;
+    } else if( c=='\n') {
+      column = 0;
+      line++;
+    }
+  }
   if( i==sizeof(program) ){
     fprintf(stderr,"Error: Program is too large, maximum is %zd operations.\n",
 	    sizeof(program));
