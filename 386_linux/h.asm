@@ -153,6 +153,16 @@ code_start:
 	cmp	bh,[ecx]
 	jne	near $-2 	; jump to start of loop body if *p!=0
 
+;;; LMUL(x,y)
+	mov	al,17
+	mul 	byte [ecx]
+	add	[ecx-42], al
+
+;;; RMUL(x,y)
+	mov	al,17
+	mul 	byte [ecx]
+	add	[ecx+42], al
+
 over:
 
 ;;; Here's the final syscall for exit(0)

@@ -66,6 +66,14 @@ for "h.asm".
  +---------------+-------------------+-------------------------------+
  | SET(x)    x>0 | mov byte [ecx],x  | C601x                         |
  +---------------+-------------------+-------------------------------+
+ | LMUL(x,y)     | mov al,y          | B0y                           |
+ |               | mul byte [ecx]    | F621                          |
+ |               | add [ecx-x],al    | 0041ww                        |
+ +---------------+-------------------+-------------------------------+
+ | RMUL(x,y)     | mov al,y          | B0y                           |
+ |               | mul byte [ecx]    | F621                          |
+ |               | add [ecx+x],al    | 0041ww                        |
+ +---------------+-------------------+-------------------------------+
    Table 1 - Bytecodes with i386 Linux asm counterparts
 
 For the operations OPEN and CLOSE, the jump offset Y must be replaced

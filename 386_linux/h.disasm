@@ -30,11 +30,11 @@
 0000003A  0000              add [eax],al
 0000003C  008004080080      add [eax-0x7ffff7fc],al
 00000042  0408              add al,0x8
-00000044  C4                db 0xC4
-00000045  0000              add [eax],al
-00000047  00C4              add ah,al
-00000049  0000              add [eax],al
-0000004B  000500000000      add [dword 0x0],al
+00000044  D200              rol byte [eax],cl
+00000046  0000              add [eax],al
+00000048  D200              rol byte [eax],cl
+0000004A  0000              add [eax],al
+0000004C  0500000000        add eax,0x0
 00000051  1000              adc [eax],al
 00000053  00B8C0000000      add [eax+0xc0],bh
 00000059  31DB              xor ebx,ebx
@@ -60,28 +60,35 @@
 00000084  31C0              xor eax,eax
 00000086  45                inc ebp
 00000087  45                inc ebp
-00000088  E932000000        jmp dword 0xbf
-0000008D  41                inc ecx
-0000008E  01E9              add ecx,ebp
-00000090  83C17F            add ecx,byte +0x7f
-00000093  49                dec ecx
-00000094  29E9              sub ecx,ebp
-00000096  83E97F            sub ecx,byte +0x7f
-00000099  FE01              inc byte [ecx]
-0000009B  8001FF            add byte [ecx],0xff
-0000009E  FE09              dec byte [ecx]
-000000A0  8029FF            sub byte [ecx],0xff
-000000A3  89F0              mov eax,esi
-000000A5  CD80              int 0x80
-000000A7  89F8              mov eax,edi
-000000A9  4B                dec ebx
-000000AA  CD80              int 0x80
-000000AC  43                inc ebx
-000000AD  8839              mov [ecx],bh
+00000088  EB43              jmp short 0xcd
+0000008A  41                inc ecx
+0000008B  01E9              add ecx,ebp
+0000008D  83C17F            add ecx,byte +0x7f
+00000090  49                dec ecx
+00000091  29E9              sub ecx,ebp
+00000093  83E97F            sub ecx,byte +0x7f
+00000096  FE01              inc byte [ecx]
+00000098  8001FF            add byte [ecx],0xff
+0000009B  FE09              dec byte [ecx]
+0000009D  8029FF            sub byte [ecx],0xff
+000000A0  89F0              mov eax,esi
+000000A2  CD80              int 0x80
+000000A4  89F8              mov eax,edi
+000000A6  4B                dec ebx
+000000A7  CD80              int 0x80
+000000A9  43                inc ebx
+000000AA  8839              mov [ecx],bh
+000000AC  C601FF            mov byte [ecx],0xff
 000000AF  3A39              cmp bh,[ecx]
 000000B1  0F8406000000      jz dword 0xbd
 000000B7  3A39              cmp bh,[ecx]
 000000B9  0F85F8FFFFFF      jnz dword 0xb7
-000000BF  89D8              mov eax,ebx
-000000C1  4B                dec ebx
-000000C2  CD80              int 0x80
+000000BF  B011              mov al,0x11
+000000C1  F621              mul byte [ecx]
+000000C3  0041D6            add [ecx-0x2a],al
+000000C6  B011              mov al,0x11
+000000C8  F621              mul byte [ecx]
+000000CA  00412A            add [ecx+0x2a],al
+000000CD  89D8              mov eax,ebx
+000000CF  4B                dec ebx
+000000D0  CD80              int 0x80
