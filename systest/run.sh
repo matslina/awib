@@ -3,9 +3,9 @@
 set -e
 
 ALL_TARGETS="lang_c 386_linux lang_ruby lang_go lang_tcl"
-ALL_TEST_CASES=$(ls -1 *.b | cut -f1 -d.|xargs)
+ALL_TEST_CASES=$(ls -1Sr *.b | cut -f1 -d.|xargs)
 AWIB_BUILD="../awib.b"
-ALL_METHODS="bfint gcc bash tclsh"
+ALL_METHODS="bfint gcc tclsh bash"
 
 BFINT_DIR="../util"
 BUILD_DIR=".build"
