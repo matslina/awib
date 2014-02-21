@@ -178,6 +178,31 @@ class BackendTestCase(common.BFTestCase):
                      ir.LEFT(2), ir.OUTPUT()],
                     [], [246])
 
+        self.run_ir([ir.RIGHT(127), ir.SUB(2), ir.LMUL(127, 1),
+                     ir.LEFT(127), ir.OUTPUT()],
+                     [], [254])
+        self.run_ir([ir.RIGHT(127), ir.SUB(2), ir.LMUL(127, 12),
+                     ir.LEFT(127), ir.OUTPUT()],
+                    [], [232])
+        self.run_ir([ir.RIGHT(127), ir.SUB(2), ir.LMUL(127, 255),
+                     ir.LEFT(127), ir.OUTPUT()],
+                    [], [2])
+
+        self.run_ir([ir.SET(3), ir.RMUL(127, 1), ir.RIGHT(127), ir.OUTPUT()],
+                    [], [3])
+        self.run_ir([ir.SET(3), ir.RMUL(127, 12), ir.RIGHT(127), ir.OUTPUT()],
+                    [], [36])
+        self.run_ir([ir.SET(3), ir.RMUL(127, 255),
+                     ir.RIGHT(127), ir.OUTPUT()],
+                    [], [253])
+
+        self.run_ir([ir.ADD(12), ir.RMUL(1, 12), ir.RIGHT(1), ir.OUTPUT()],
+                    [], [144])
+        self.run_ir([ir.RIGHT(1), ir.ADD(12), ir.LMUL(1, 12), ir.LEFT(1),
+                     ir.OUTPUT()],
+                    [], [144])
+
+
 
 class LangGenericTestCase(BackendTestCase):
     BACKEND_PATH = "lang_generic/backend.b"
