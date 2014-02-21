@@ -122,10 +122,10 @@ which both span 4 bytes.
  | 09 x      | SET(x)    | Set current cell to x            | 0 <= x <= 255  |
  +-----------+-----------+----------------------------------+----------------+
  | 10 x 11 y | LMUL(x,y) | Add current cell times y to the  | 1 <= x <= 127  |
- |           |           | cell x steps leftwards           | 1 <= y <= 127  |
+ |           |           | cell x steps leftwards           | 1 <= y <= 255  |
  +-----------+-----------+----------------------------------+----------------+
  | 12 x 13 y | RMUL(x,y) | Add current cell times y to the  | 1 <= x <= 127  |
- |           |           | cell x steps rightwards          | 1 <= y <= 127  |
+ |           |           | cell x steps rightwards          | 1 <= y <= 255  |
  +-----------+-----------+----------------------------------+----------------+
 
    Table 2 - Bytecode
