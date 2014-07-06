@@ -1,3 +1,37 @@
+## About
+
+This is the Java backend for awib. It compiles awib bytecode to Java
+source code. Very enterprise.
+
+Implementing this was non-trivial. At first glance it appears to fit
+well in the generic language framework. Unfortunately, Java limits the
+size of methods to 64kb of JMV bytecode. That's a deal breaker.
+
+## Rough outline
+
+Most operations are simple 1 to 1 translations. The exceptions are
+OPEN and CLOSE. To get around the 64kb limit we break up all loops
+into separate methods. One method for the loop body, another method
+for the remaining code.
+
+E.g., consider three code blocks (A, B and C) separated by OPEN and
+CLOSE instructions:
+
+    <A> OPEN() <B> CLOSE() <C>
+
+Awib will compile that into something like this:
+
+    method_1() {
+      <A>
+      while (keep_iterating) { method_2() }
+      method_3()
+    }
+    method_2() { <B> }
+    method_3() { <C> }
+
+## Annoying details
+
+Here's the language definition:
 
  +--------------+------------------------------------------------------------+
  | Bytecode     | Output                                                     |
@@ -29,3 +63,23 @@
  | RMUL(x,y)    | m[p+$x]+=m[p]*$y;                                          |
  +--------------+------------------------------------------------------------+
    Table 1 - Bytecodes with Java counterparts
+
+Method naming is non-trivial. Awib maintains a 2-cell counter C and a
+stack segment for keeping track of older values of C. The initial
+value of C is (255, 255).
+
+When processing OPEN, awib will:
+
+ 1. Output the code for OPEN with
+  1.1 $d replaced with a decimal representation of C
+  1.2 $e replaced with a decimal representation of C - 1
+ 2. Push C - 1 to the stack
+ 3. Set C to C - 2 for the subsequent iteration
+
+While C is a 2-cell counter it is *not* output as a single 16-bit
+integer. Instead each cell is printed separately with an underscore
+('_') separating the two.
+
+When processing CLOSE, awib will output the corresponding code with $d
+replaced by a decimal representation of the top stack element. This
+element is popped from the stack and then discarded.
