@@ -1,19 +1,13 @@
 awib-0.4
 ========
 
-Awib is:
-- a brainfuck compiler written in brainfuck
-- optimizing
-- capable of compiling to
- - Linux executables (for i386)
- - Tcl code
- - Ruby code
- - Go code
- - C code
- - Java code
-- polyglot in Tcl, C and bash (and brainfuck!)
+Awib is a brainfuck compiler written in brainfuck. It is also polyglot
+in bash, Tcl and C. It is optimizing and portable. Awib is capable of
+compiling brainfuck source code into Linux executables (i386) and five
+programming languages: C, Tcl, Go, Ruby and Java.
 
-The bulk of awib is written by Mats Linander <matslina (at) gmail (dot) com>.
+The bulk of awib is written by Mats Linander <matslina (at) gmail
+(dot) com>.
 
 
 Usage
