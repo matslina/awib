@@ -30,12 +30,12 @@ To specify a target platform, insert a line on the form "@TARGET"
 at the very beginning of the source code you wish to compile.
 Awib will then produce output accordingly.
 
-    **386_linux** Linux executables for i386
-    **lang_c**    C code
-    **lang_ruby** Ruby code
-    **lang_go**   Go code
-    **lang_tcl**  Tcl code
-    **lang_java** Java code
+    386_linux - Linux executables for i386
+    lang_c    - C code
+    lang_ruby - Ruby code
+    lang_go   - Go code
+    lang_tcl  - Tcl code
+    lang_java - Java code
 For instance, the following input would produce an executable hello
 world-program for Linux:
 
@@ -72,8 +72,8 @@ Awib is an optimizing compiler:
    cells are 0) and loops opened immediately after the closing
    of another loop.
 - Copy and multiplication loops are replaced with constant time
-  operations. E.g. "[->>+++<+<]" is compiled into two RMUL(2, 3) and
-  RMUL(1,1)) followed by a single CLEAR instruction.
+  operations. E.g. "[->>+++<+<]" is compiled into two RMUL(2, 3),
+  RMUL(1,1)), SET(0)..
 
 Requirements
 ------------
