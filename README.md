@@ -1,20 +1,17 @@
-awib-0.3
+awib-0.4
 ========
 
-About
------
-
-In summary, awib 0.3 is:
-
+Awib is:
 - a brainfuck compiler written in brainfuck
-- polyglot in Tcl, C and bash (and brainfuck!)
 - optimizing
 - capable of compiling to
  - Linux executables (for i386)
- - Tcl
- - Ruby
- - Go
- - C
+ - Tcl code
+ - Ruby code
+ - Go code
+ - C code
+ - Java code
+- polyglot in Tcl, C and bash (and brainfuck!)
 
 The bulk of awib is written by Mats Linander <matslina (at) gmail (dot) com>.
 
@@ -26,19 +23,19 @@ Feed awib brainfuck source code as input and the compiled program
 will be written as output.
 
 Awib is a cross-compiler. The supported target platforms are
-listed in table 1. By default, the target "lang_c" is chosen.
+listed below. By default, the target "lang_c" is chosen.
 
 To specify a target platform, insert a line on the form "@TARGET"
 (without the quotation marks and with "TARGET" suitably replaced)
 at the very beginning of the source code you wish to compile.
 Awib will then produce output accordingly.
 
--   **386_linux** Linux on i386
--   **lang_c** C programming language
--   **lang_ruby** Ruby programming language
--   **lang_go** Go programming language
--   **lang_tcl** Tcl programming language
-
+    **386_linux** Linux executables for i386
+    **lang_c**    C code
+    **lang_ruby** Ruby code
+    **lang_go**   Go code
+    **lang_tcl**  Tcl code
+    **lang_java** Java code
 For instance, the following input would produce an executable hello
 world-program for Linux:
 
@@ -52,7 +49,7 @@ The following would produce a hello world-program in Ruby:
     ++++++[->++++++++++++<]>.----[--<+++>]<-.+++++++..+++.[--->+<]>-----.--
     -[-<+++>]<.---[--->++++<]>-.+++.------.--------.-[---<+>]<.[--->+<]>-.
 
-And this would give you the hello world-program in C:
+And this file would give you the hello world-program in C:
 
     @lang_c
     ++++++[->++++++++++++<]>.----[--<+++>]<-.+++++++..+++.[--->+<]>-----.--
@@ -66,19 +63,17 @@ Awib is an optimizing compiler:
 
 -  Sequences of '-','>','<' and '+' are contracted into single
    instructions. E.g. "----" is replaced with a single SUB(4).
-
 -  Mutually cancelling instructions are reduced. E.g. "+++-->><"
    is equivalent to "+>" and is compiled accordingly.
-
 -  Some common constructs are identified and replaced with single
-   instructions. E.g. "[-]" is compiled into a single CLEAR-
-   instruction.
-
+   instructions. E.g. "[-]" is compiled into a single SET(0).
 -  Loops known to never be entered are removed. This is the case
    for loops opened at the very beginning of a program (when all
    cells are 0) and loops opened immediately after the closing
    of another loop.
-
+- Copy and multiplication loops are replaced with constant time
+  operations. E.g. "[->>+++<+<]" is compiled into two RMUL(2, 3) and
+  RMUL(1,1)) followed by a single CLEAR instruction.
 
 Requirements
 ------------
@@ -86,7 +81,6 @@ Requirements
 Awib will run smoothly in any brainfuck environment where:
 
 -  Cells are 8-bit or larger
-
 -  The read instruction ',' (comma) issued after end of
    input results in 0 being written OR -1 being written
    OR no change being made to the cell at all.
@@ -94,8 +88,8 @@ Awib will run smoothly in any brainfuck environment where:
 The vast majority of brainfuck environments meet these criteria.
 
 Since awib is polyglot, it is also possible to compile and/or run awib
-directly as C or bash. For instance, using gcc, the following will
-build an executable file called awib from awib-0.2.b.
+directly as C, tcl or bash. For instance, using gcc, the following
+will build an executable file called awib from awib-0.2.b.
 
     $ cp awib-0.2.b awib-0.2.c
     $ gcc awib-0.2.c -o awib.tmp
@@ -107,6 +101,11 @@ Using bash works fine, but is very very very slow:
     $ (echo "@386_linux"; cat awib.b) | bash awib.b > awib
     $ chmod +x awib
 
+And tcl:
+
+    $ (echo "@386_linux"; cat awib.b) | tclsh awib.b > awib
+    $ chmod +x awib
+
 
 Environment
 -----------
@@ -114,13 +113,10 @@ Environment
 Code compiled with awib will execute in an environment where:
 
 -  Cells are 8-bit wrapping integers.
-
 -  Issuing the read instruction ',' (comma) after
    end of input results in the current cell being
    left as is  (no-change on EOF).
-
 -  At least 2^16-1 = 65535 cells are available.
-
 -  Operating beyond the available memory, in either
    direction, results in undefined behaviour.
 
@@ -142,4 +138,4 @@ License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-Mats Linander, 2010-10-03
+Mats Linander, 2014-09-14
