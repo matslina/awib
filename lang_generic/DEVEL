@@ -186,8 +186,8 @@ python with this backend, since awib has > 25 levels of nested loops.
  | header       | package main                                               |
  |              | import "os"                                                |
  |              | func run(in *os.File, out *os.File){                       |
- |              |   var m[0xffff]byte                                        |
- |              |   var p int                                                |
+ |              |   var m[0x10100]byte                                       |
+ |              |   p:=127                                                   |
  |              |   m[p]=0                                                   |
  +--------------+------------------------------------------------------------+
  | footer       | }                                                          |
@@ -244,7 +244,7 @@ python with this backend, since awib has > 25 levels of nested loops.
  +--------------+------------------------------------------------------------+
  | header       | #!/usr/bin/ruby                                            |
  |              | def run(in_, out)                                          |
- |              |     m=[0]*0xffff;p=0;                                      |
+ |              |     m=[0]*0x10100;p=127;                                   |
  +--------------+------------------------------------------------------------+
  | footer       | end                                                        |
  |              | run(STDIN, STDOUT)                                         |
@@ -301,9 +301,9 @@ python with this backend, since awib has > 25 levels of nested loops.
  |              | fconfigure stdout -encoding binary                         |
  |              | fconfigure stdin -encoding binary                          |
  |              | proc run {in out} {                                        |
- |              |     set p 0                                                |
+ |              |     set p 127                                              |
  |              |     set mem {0}                                            |
- |              |     for {set i 0} {$i<0xffff} {incr i} {lappend mem 0}     |
+ |              |     for {set i 0} {$i<0x10100} {incr i} {lappend mem 0}    |
  +--------------+------------------------------------------------------------+
  | footer       |     return 0                                               |
  |              | }                                                          |

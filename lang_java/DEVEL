@@ -29,9 +29,7 @@ Awib will compile that into something like this:
     method_2() { <B> }
     method_3() { <C> }
 
-## Annoying details
-
-Here's the language definition:
+## IR translation
 
  +--------------+------------------------------------------------------------+
  | Bytecode     | Output                                                     |
@@ -83,3 +81,54 @@ integer. Instead each cell is printed separately with an underscore
 When processing CLOSE, awib will output the corresponding code with $d
 replaced by a decimal representation of the top stack element. This
 element is popped from the stack and then discarded.
+
+## Head and foot
+
+The IR translation is wrapped in a header and footer that sets up
+memory area, pointer, IO and a couple of helper methods. Due to Java,
+the header is pretty humongous.
+
+### Header
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.IOException;
+
+public class Bf {
+    byte[] m;
+    int p;
+    InputStream i;
+    OutputStream o;
+
+    public Bf(InputStream i, OutputStream o) {
+        m=new byte[0x10100];
+        p=127;
+        this.i=i;
+        this.o=o;
+    }
+
+    public void run () {
+        this._0();
+    }
+
+    public static void main(String[] args) {
+        new Bf(System.in,System.out).run();
+    }
+
+    private void r() {
+        try {
+            i.read(m,p,1);
+        } catch (IOException e) {}
+    }
+
+    private void w() {
+        try {
+            o.write(m[p]);
+            o.flush();
+        } catch (IOException e) {}
+    }
+
+    private void _0() {
+
+### Footer
+    }
+}

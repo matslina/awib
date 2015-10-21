@@ -23,9 +23,9 @@ the awib bytecode operation. The header is as follows:
  #define eC(x) *p-=x;
  #define eB(x) c=getchar();if(c>=0)*p=c;
  #define eA(x) *p+=x;
- char buf[0xffff];
+ char buf[0x10100];
  int main(){
- char *p=buf;
+ char *p=buf+127;
  int c;
 
 After this, for each bytecode operation P(i), "eP(i)" is output. When all the

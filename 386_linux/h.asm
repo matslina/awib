@@ -63,12 +63,13 @@ code_start:
 ;;; Allocate memory area by calling mmap2
 	mov	eax,0xc0	; sys_mmap
 	xor	ebx,ebx		; *start=0
-	mov	ecx,0xffff	; length=0xffff
+	mov 	ecx,0x100ff	; length=0x100ff
 	mov	edx,3		; prot=PROT_READ|PROT_WRITE
 	mov	esi,0x22	; flags=MAP_ANONYMOUS|MAP_PRIVATE
 	xor	edi,edi		; fd=0
 	xor	ebp,ebp		; offset=0
 	int	0x80
+	add	eax, byte 127	; 127 bytes of padding
 
 ;;; Initialize cells to zero (0)
 	mov	edx,eax		; save address in edx

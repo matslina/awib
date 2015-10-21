@@ -202,6 +202,45 @@ class BackendTestCase(common.BFTestCase):
                      ir.OUTPUT()],
                     [], [144])
 
+    def test_mul_overreaching(self):
+        """Backend should handle MUL writing up to 127 cells outside of tape.
+
+        There are perfectly valid programs for which the frontend will
+        output multiplication operations that write to a position
+        outside of the tape. One example would be '.[-<+>]' for which
+        an OUTPUT() followed by LMUL(1,1) will be produced. There are
+        other less obvious cases that the frontend cannot catch (and
+        my gut says catching them all it's equivalent to the halting
+        problem).
+
+        One option is for the backends to always check that the
+        current cell is non-zero before writing the product of a
+        multiplication operation. Another option is to simply pad the
+        tape with 127 cells on each end and to initialize the pointer
+        at position 127 instead of 0 (and 127 is magic because it's
+        the max offset the frontend emits for the multipication
+        operations).
+        """
+
+        # offsets on the left
+        self.run_ir([ir.LMUL(1, 1), ir.OUTPUT()], [], [0])
+        self.run_ir([ir.LMUL(2, 1), ir.OUTPUT()], [], [0])
+        self.run_ir([ir.LMUL(3, 1), ir.OUTPUT()], [], [0])
+        self.run_ir([ir.LMUL(126, 1), ir.OUTPUT()], [], [0])
+        self.run_ir([ir.LMUL(127, 1), ir.OUTPUT()], [], [0])
+
+        # offsets on the right
+        movetolastcell = [ir.RIGHT(127) for _ in range(516)] + [ir.RIGHT(2)]
+        self.run_ir(movetolastcell + [ir.RMUL(1, 1), ir.OUTPUT()], [], [0],
+                    steps=10000000)
+        self.run_ir(movetolastcell + [ir.RMUL(2, 1), ir.OUTPUT()], [], [0],
+                    steps=10000000)
+        self.run_ir(movetolastcell + [ir.RMUL(3, 1), ir.OUTPUT()], [], [0],
+                    steps=10000000)
+        self.run_ir(movetolastcell + [ir.RMUL(126, 1), ir.OUTPUT()], [], [0],
+                    steps=10000000)
+        self.run_ir(movetolastcell + [ir.RMUL(127, 1), ir.OUTPUT()], [], [0],
+                    steps=10000000)
 
 
 class LangGenericTestCase(BackendTestCase):
