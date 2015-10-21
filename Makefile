@@ -2,7 +2,7 @@ all:	awib.b
 
 binary: awib.b
 	cp awib.b awib_make_binary.c
-	gcc awib_make_binary.c -o awib_make_binary.bin -O2
+	gcc -std=c99 awib_make_binary.c -o awib_make_binary.bin -O2
 	./awib_make_binary.bin < awib.b > awib_make_binary2.c
 	gcc awib_make_binary2.c -o awib -O2
 
