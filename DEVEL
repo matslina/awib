@@ -78,6 +78,8 @@ The target platform is indicated by its backend index, as given in table 1.
  +----------------------+------------------+
  | lang_tcl             | 7                |
  +----------------------+------------------+
+ | lang_java            | 8                |
+ +----------------------+------------------+
    Table 1 - Targets and backend indices
 
 For additional details, have a look at the commented frontend source code.
