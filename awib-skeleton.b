@@ -32,7 +32,7 @@
 % 22(0) *T (code) 0 M m
 // T=7: lang_tcl
 // T=6: lang_ruby
-// T=5: lang_python
+// T=5: (null)
 // T=4: lang_go
 // T=3: lang_dummy
 

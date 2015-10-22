@@ -31,11 +31,10 @@
 #include(ruby.b)
 <<<<<]>]
 
-<[->>>>>
-# T=5: lang_python
-% (stuff) *D d 7(0) S (stuff)
-#include(python.b)
-<<<<<]>]
+<[-
+# T=5: (null)
+# A Python backend lived here once upon a time
+]>]
 
 <[->>>>>
 # T=4: lang_go
