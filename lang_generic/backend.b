@@ -43,9 +43,8 @@
 <<<<<]>]
 
 <[->>>>>
-# T=3: lang_dummy
-% (stuff) *D d 7(0) S (stuff)
-#include(dummy.b)
+# T=3: (null)
+# A dummy backend lived here once upon a time
 <<<<<]
 
 >>>>>>>>>>>>>>>>
