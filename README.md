@@ -1,13 +1,11 @@
 
 Awib is a brainfuck compiler entirely written in brainfuck.
 
-Notable features:
-- **Optimizing** Awib implements several optimization strategies
-  and its compiled output outperforms that of many other brainfuck
-  compilers
-- **Polyglot** Awib is a 4-language polyglot and can be run/compiled
+- Awib implements several optimization strategies and its compiled
+  output outperforms that of many other brainfuck compilers
+- Awib is itself a 4-language polyglot and can be run/compiled
   as brainfuck, Tcl, C and bash
-- **Multi-target** Awib has 6 separate backends and is capable of
+- Awib has 6 separate backends and is capable of
   compiling brainfuck source code to Linux executables (i386) and
   five programming languages: C, Tcl, Go, Ruby and Java
 
