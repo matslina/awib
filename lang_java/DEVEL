@@ -5,7 +5,7 @@ source code. Very enterprise.
 
 Implementing this was non-trivial. At first glance it appears to fit
 well in the generic language framework. Unfortunately, Java limits the
-size of methods to 64kb of JMV bytecode. That's a deal breaker.
+size of methods to 64kb of JVM bytecode. That's a deal breaker.
 
 ## Rough outline
 
