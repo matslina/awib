@@ -73,32 +73,32 @@ class WideOp(object):
 
 class ADD(Op):
     code = 1
-    range = xrange(1,256)
+    range = range(1,256)
 class SUB(Op):
     code = 3
-    range = xrange(1,256)
+    range = range(1,256)
 class LEFT(Op):
     code = 5
-    range = xrange(1,256)
+    range = range(1,256)
 class RIGHT(Op):
     code = 6
-    range = xrange(1,256)
+    range = range(1,256)
 class INPUT(Op): code = 2
 class OUTPUT(Op): code = 4
 class OPEN(Op): code = 7
 class CLOSE(Op): code = 8
 class SET(Op):
     code = 9
-    range = xrange(0,256)
+    range = range(0,256)
 
 class LMUL(WideOp):
     code = 10
     padding = 11
-    range = (xrange(1,128), xrange(1,256))
+    range = (range(1,128), range(1,256))
 class RMUL(WideOp):
     code = 12
     padding = 13
-    range = (xrange(1,128), xrange(1,256))
+    range = (range(1,128), range(1,256))
 
 op = dict((op.code, op) for op in [ADD,SUB,LEFT,RIGHT,INPUT,OUTPUT,
                                    OPEN,CLOSE,SET,LMUL,RMUL])

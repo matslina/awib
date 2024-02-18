@@ -137,7 +137,7 @@ class AWIP:
         """Reduces clear loops ('[-]' and '[+]') into CLEAR."""
 
         code = self.code
-        for i in xrange(2, len(code)):
+        for i in range(2, len(code)):
             if (code[i][0] == CLOSE and code[i-2][0] == OPEN and
                 code[i-1][1] == 1 and code[i-1][0] in (SUB, ADD)):
                 code[i-2] = code[i-1] = (NOP, 0)
@@ -329,7 +329,7 @@ def _main():
     # fetch brainfuck source
     try:
         code = open(args[0]).read()
-    except IOError, ie:
+    except IOError as ie:
         sys.stderr.write("Error: could not open '%s' for reading: %s\n" %
                          (args[0], ie))
         return 1
@@ -337,7 +337,7 @@ def _main():
     # compile
     try:
         int = AWIP(code)
-    except AWIPError, bfe:
+    except AWIPError as bfe:
         sys.stderr.write("Error: failed to compile code: %s\n" % bfe)
         return 1
 
@@ -354,7 +354,7 @@ def _main():
         sys.stderr.write("Error: program terminated after exceeding step "
                          "limit %d\n" % options.steps)
         return 1
-    except AWIPRuntimeError, bfe:
+    except AWIPRuntimeError as bfe:
         sys.stderr.write("Error: %s\n" % bfe)
         return 1
     return 0

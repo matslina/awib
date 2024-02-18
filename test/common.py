@@ -5,7 +5,7 @@ import unittest
 from awip import AWIP, AWIPError, AWIPStepError
 
 def _diff_pos(a,b):
-    for i in xrange(min(len(a), len(b))):
+    for i in range(min(len(a), len(b))):
         if a[i] != b[i]:
             return i
     return -1
@@ -52,7 +52,7 @@ class BFTestCase(unittest.TestCase):
                     self.fail("code didn't terminate within %d steps for "
                               "(%d bits, %s)" %
                               (steps, cell_size, eof_name))
-                except AWIPError, ae:
+                except AWIPError as ae:
                     self.fail("code fails for (%d bits, %s): %s" %
                               (cell_size, eof_name, ae))
 
@@ -77,7 +77,7 @@ class BFTestCase(unittest.TestCase):
 
                 prev_cs, prev_eb = cell_size, eof_name
 
-        for i in xrange(len(memory)-1, -1, -1):
+        for i in range(len(memory)-1, -1, -1):
             if memory[i] != 0:
                 break
 
