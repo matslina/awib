@@ -17,7 +17,7 @@ class JavaTestCase(backend.BackendTestCase):
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE)
         stdout, stderr = p.communicate(input)
-        self.assertEquals(p.returncode, 0)
+        self.assertEqual(p.returncode, 0)
         return stdout
 
     def test_deep_nested_loops(self):

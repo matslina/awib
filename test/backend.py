@@ -83,9 +83,9 @@ class BackendTestCase(common.BFTestCase):
 
         # compare output
         for i, (o, e) in enumerate(zip(prog_out, expected_output)):
-            self.assertEquals(o, e, "outputs differ at position %d: "
+            self.assertEqual(o, e, "outputs differ at position %d: "
                               "expected %d, got %d" % (i, e, o))
-        self.assertEquals(len(prog_out), len(expected_output))
+        self.assertEqual(len(prog_out), len(expected_output))
 
     def test_empty_program(self):
         self.run_ir([],[],[])

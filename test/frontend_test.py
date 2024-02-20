@@ -25,12 +25,12 @@ class FrontendTest(common.BFTestCase):
         self.assert_(len(mem) >= 6, "post exec memory must span at least 6 "
                      "cells, only got %d" % len(mem))
         if target is not None:
-            self.assertEquals(mem[0], target,
+            self.assertEqual(mem[0], target,
                               "bad target platform (%d!=%d)" % (mem[0],target))
         else:
             self.assert_(mem[0] in (_LANG_C, _386_LINUX),
                          "frontend chose bad target platform T (=%d)" % mem[0])
-        self.assertEquals(mem[1], 0, "frontend should leave cell 1 blank")
+        self.assertEqual(mem[1], 0, "frontend should leave cell 1 blank")
         self.assert_(mem[2], "frontend marked bytecode as not OK")
 
         # find end of compiled code block
@@ -43,7 +43,7 @@ class FrontendTest(common.BFTestCase):
         self.assert_( not (len(mem) > i+3), "junk data beyond max loop depth")
         if maxdepth is not None:
             Mm = mem[i+1]*0xff + mem[i+2]
-            self.assertEquals(Mm, maxdepth, "wrong max depth, got %d not %d" %
+            self.assertEqual(Mm, maxdepth, "wrong max depth, got %d not %d" %
                               (Mm, maxdepth))
 
 
@@ -69,7 +69,7 @@ class FrontendTest(common.BFTestCase):
     def _run_and_check_ir(self, program, ir, maxdepth=1):
         out, mem = self.run_bf(self.code, program,
                                precondition=[1], steps=10000000)
-        self.assertEquals(out, [], "frontend should not produce output")
+        self.assertEqual(out, [], "frontend should not produce output")
         self._check_post_condition(mem, ir, maxdepth=maxdepth)
 
     def test_empty_input(self):
@@ -419,7 +419,7 @@ class FrontendTest(common.BFTestCase):
         default_target = 17 # some target
         out, mem = self.run_bf(self.code, program,
                                precondition=[default_target], steps=500000)
-        self.assertEquals(out, [], "frontend should not produce output")
+        self.assertEqual(out, [], "frontend should not produce output")
         self._check_post_condition(mem, ir, target=target)
 
     def test_target_empty(self):
@@ -470,9 +470,9 @@ class FrontendTest(common.BFTestCase):
     def _run_and_check_mismatched(self, program):
         out, mem = self.run_bf(self.code, program,
                                precondition=[1], steps=5000000)
-        self.assertEquals(''.join(chr(c) for c in out),
+        self.assertEqual(''.join(chr(c) for c in out),
                           'Error: unbalanced brackets!\n')
-        self.assertEquals(mem[2], 0, "code should not be marked as ok")
+        self.assertEqual(mem[2], 0, "code should not be marked as ok")
 
     def test_unbalanced_loop(self):
         self._run_and_check_mismatched("[")

@@ -12,7 +12,7 @@ class TclTest(backend.LangGenericTestCase):
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE)
         stdout, stderr = p.communicate(input)
-        self.assertEquals(p.returncode, 0)
+        self.assertEqual(p.returncode, 0)
         return stdout
 
 
