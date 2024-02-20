@@ -22,16 +22,16 @@ class FrontendTest(common.BFTestCase):
         """Checks frontend post execution memory against expected ir code."""
 
         # sanity
-        self.assert_(len(mem) >= 6, "post exec memory must span at least 6 "
+        self.assertTrue(len(mem) >= 6, "post exec memory must span at least 6 "
                      "cells, only got %d" % len(mem))
         if target is not None:
             self.assertEqual(mem[0], target,
                               "bad target platform (%d!=%d)" % (mem[0],target))
         else:
-            self.assert_(mem[0] in (_LANG_C, _386_LINUX),
+            self.assertTrue(mem[0] in (_LANG_C, _386_LINUX),
                          "frontend chose bad target platform T (=%d)" % mem[0])
         self.assertEqual(mem[1], 0, "frontend should leave cell 1 blank")
-        self.assert_(mem[2], "frontend marked bytecode as not OK")
+        self.assertTrue(mem[2], "frontend marked bytecode as not OK")
 
         # find end of compiled code block
         i = 3
@@ -39,8 +39,8 @@ class FrontendTest(common.BFTestCase):
             i += 2
 
         # more sanity
-        self.assert_( not (len(mem) < i+3), "maximum loop depth is missing")
-        self.assert_( not (len(mem) > i+3), "junk data beyond max loop depth")
+        self.assertTrue( not (len(mem) < i+3), "maximum loop depth is missing")
+        self.assertTrue( not (len(mem) > i+3), "junk data beyond max loop depth")
         if maxdepth is not None:
             Mm = mem[i+1]*0xff + mem[i+2]
             self.assertEqual(Mm, maxdepth, "wrong max depth, got %d not %d" %
