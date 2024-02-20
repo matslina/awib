@@ -77,13 +77,12 @@ class BackendTestCase(common.BFTestCase):
 
         # run backend output
         try:
-            prog_out = self.run_program(prog_path, ''.join(map(chr, input)))
+            prog_out = self.run_program(prog_path, bytes(input))
         finally:
             shutil.rmtree(tmpd)
 
         # compare output
         for i, (o, e) in enumerate(zip(prog_out, expected_output)):
-            o = ord(o)
             self.assertEquals(o, e, "outputs differ at position %d: "
                               "expected %d, got %d" % (i, e, o))
         self.assertEquals(len(prog_out), len(expected_output))

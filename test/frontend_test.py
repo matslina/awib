@@ -52,7 +52,7 @@ class FrontendTest(common.BFTestCase):
         # compare frontend output with expected byte code
         try:
             compile = ir.parse_codes(mem[3:i])
-        except ValueError, ve:
+        except ValueError as ve:
             self.fail("broken bytecode: %s" % ve)
         for i, (op, expected) in enumerate(zip(compile, code)):
             if op != expected:
