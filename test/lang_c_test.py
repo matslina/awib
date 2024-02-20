@@ -15,7 +15,7 @@ class LinuxTestCase(backend.BackendTestCase):
 
         p = subprocess.Popen(['gcc', '-v'], stderr=subprocess.PIPE)
         stdout, stderr = p.communicate()
-        self.assertEquals(p.returncode, 0)
+        self.assertEqual(p.returncode, 0)
 
         if "clang" in stderr.decode("utf-8"):
             self.cc_flags = ["-fbracket-depth=512"]
@@ -27,7 +27,7 @@ class LinuxTestCase(backend.BackendTestCase):
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE)
         stdout, stderr = p.communicate(input)
-        self.assertEquals(p.returncode, 0)
+        self.assertEqual(p.returncode, 0)
         return stdout
 
 
