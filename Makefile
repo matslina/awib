@@ -9,5 +9,8 @@ binary: awib.b
 awib.b: awib-skeleton.b 386_linux/backend.b lang_c/backend.b frontend/frontend.b lang_generic/backend.b lang_generic/go.b lang_generic/ruby.b lang_generic/tcl.b lang_java/backend.b
 	python util/bfpp.py --interpreter --format formats/awib-0.3 --width 79 awib-skeleton.b > awib.b
 
+test:	awib.b
+	python3 test/main.py
+
 clean:
 	rm -f awib.b *~ awib_make_binary* awib
