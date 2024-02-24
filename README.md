@@ -1,6 +1,7 @@
-![example workflow](https://github.com/matslina/awib/actions/workflows/ci.yaml/badge.svg)
+![ci](https://github.com/matslina/awib/actions/workflows/ci.yaml/badge.svg)
 
-Awib is a brainfuck compiler entirely written in brainfuck.
+Awib is a [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck)
+compiler, written in Brainfuck.
 
 - Awib implements several optimization strategies and its compiled
   output outperforms that of many other brainfuck compilers
@@ -13,16 +14,13 @@ Awib is a brainfuck compiler entirely written in brainfuck.
 Usage
 -----
 
-Feed awib brainfuck source code as input and the compiled program
-will be written as output.
+Given brainfuck source code as input, awib will write the compiled
+program as output.
 
-Awib is a cross-compiler. The supported target platforms are
-listed below. By default, the target "lang_c" is chosen.
+To specify a compilation target, insert a line on the form "@TARGET"
+at the very beginning of the code you wish to compile. The following
+targets are supported:
 
-To specify a target platform, insert a line on the form "@TARGET"
-(without the quotation marks and with "TARGET" suitably replaced)
-at the very beginning of the source code you wish to compile.
-Awib will then produce output accordingly.
 
     386_linux - Linux executables for i386
     lang_c    - C code
@@ -30,6 +28,7 @@ Awib will then produce output accordingly.
     lang_go   - Go code
     lang_tcl  - Tcl code
     lang_java - Java code
+
 For instance, the following input would produce an executable hello
 world-program for Linux:
 
@@ -49,7 +48,6 @@ And this file would give you the hello world-program in C:
     ++++++[->++++++++++++<]>.----[--<+++>]<-.+++++++..+++.[--->+<]>-----.--
     -[-<+++>]<.---[--->++++<]>-.+++.------.--------.-[---<+>]<.[--->+<]>-.
 
-
 Optimizations
 -------------
 
@@ -59,22 +57,22 @@ Awib is an optimizing compiler:
    instructions. E.g. "----" is replaced with a single SUB(4).
 -  Mutually cancelling instructions are reduced. E.g. "+++-->><"
    is equivalent to "+>" and is compiled accordingly.
--  Some common constructs are identified and replaced with single
-   instructions. E.g. "[-]" is compiled into a single SET(0).
+-  Some common constructs are replaced with single instructions.
+   E.g. "[-]" is compiled into a single SET(0).
 -  Loops known to never be entered are removed. This is the case
    for loops opened at the very beginning of a program (when all
    cells are 0) and loops opened immediately after the closing
    of another loop.
-- Copy and multiplication loops are replaced with constant time
-  operations. E.g. "[->>+++<+<]" is compiled into two RMUL(2, 3),
-  RMUL(1,1)), SET(0)..
+-  Copy and multiplication loops are replaced with constant time
+   operations. E.g. "[->>+++<+<]" is compiled into RMUL(2, 3),
+   RMUL(1,1)), SET(0).
 
 Requirements
 ------------
 
-Awib will run smoothly in any brainfuck environment where:
+Awib is portable and will run smoothly in any brainfuck environment where:
 
--  Cells are 8-bit or larger
+-  Cells are 8 bits or larger
 -  The read instruction ',' (comma) issued after end of
    input results in 0 being written OR -1 being written
    OR no change being made to the cell at all.
@@ -83,14 +81,14 @@ The vast majority of brainfuck environments meet these criteria.
 
 Since awib is polyglot, it is also possible to compile and/or run awib
 directly as C, tcl or bash. For instance, using gcc, the following
-will build an executable file called awib from awib-0.2.b.
+will build an executable file called awib from awib.b.
 
-    $ cp awib-0.2.b awib-0.2.c
-    $ gcc awib-0.2.c -o awib.tmp
-    $ ./awib.tmp < awib-0.2.b > awib-0.2.c
-    $ gcc -O2 awib-0.2.c -o awib
+    $ cp awib.b awib.c
+    $ gcc awib.c -o awib.tmp
+    $ ./awib.tmp < awib.b > awib.c
+    $ gcc -O2 awib.c -o awib
 
-Using bash works fine, but is very very very slow:
+Using bash works fine, but is very slow:
 
     $ (echo "@386_linux"; cat awib.b) | bash awib.b > awib
     $ chmod +x awib
@@ -99,7 +97,6 @@ And tcl:
 
     $ (echo "@386_linux"; cat awib.b) | tclsh awib.b > awib
     $ chmod +x awib
-
 
 Environment
 -----------
@@ -113,7 +110,6 @@ Code compiled with awib will execute in an environment where:
 -  At least 2^16-1 = 65535 cells are available.
 -  Operating beyond the available memory, in either
    direction, results in undefined behaviour.
-
 
 License
 -------
@@ -130,6 +126,3 @@ License
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-Mats Linander, 2014-09-14
