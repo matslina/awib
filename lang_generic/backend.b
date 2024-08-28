@@ -17,6 +17,7 @@
 
 # run language definition according to T with S=P
 % 1 *T T D d D d 7(0) P P 0 Q (code)
+
 ---[-[-[-[-[<->++++[-]]
 
 <[->>>>>
@@ -43,8 +44,10 @@
 <<<<<]>]
 
 <[->>>>>
-# T=3: (null)
-# A dummy backend lived here once upon a time
+# T=3: lang_rust
+% (stuff) *D d 7(0) S (stuff)
+#include(rust.b)
+
 <<<<<]
 
 >>>>>>>>>>>>>>>>
