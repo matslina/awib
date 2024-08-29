@@ -8,7 +8,7 @@ Awib is a brainfuck compiler entirely written in brainfuck.
   as brainfuck, Tcl, C and bash
 - Awib has 6 separate backends and is capable of
   compiling brainfuck source code to Linux executables (i386) and
-  five programming languages: C, Tcl, Go, Ruby and Java
+  five programming languages: C, Tcl, Go, Ruby, Java and Rust
 
 Usage
 -----
@@ -30,6 +30,8 @@ Awib will then produce output accordingly.
     lang_go   - Go code
     lang_tcl  - Tcl code
     lang_java - Java code
+    lang_rust - Rust code
+
 For instance, the following input would produce an executable hello
 world-program for Linux:
 
