@@ -2,7 +2,7 @@
 
 set -e
 
-ALL_TARGETS="lang_c 386_linux lang_ruby lang_go lang_tcl lang_java"
+ALL_TARGETS="lang_c 386_linux lang_ruby lang_go lang_tcl lang_java lang_rust"
 ALL_TEST_CASES=$(ls -1Sr *.b | cut -f1 -d.|xargs)
 AWIB_BUILD="../awib.b"
 ALL_METHODS="bfint gcc tclsh bash"
@@ -173,6 +173,11 @@ java Bf
 EOF
 	    chmod +x $out
 	    ;;
+
+        lang_rust)
+            mv $out $out.rs
+            rustc $out.rs -o $out
+            ;;
     esac
 
     return 0
