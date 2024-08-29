@@ -34,7 +34,7 @@
 // T=6: lang_ruby
 // T=5: (null)
 // T=4: lang_go
-// T=3: (null)
+// T=3: lang_rust
 
 #include(lang_generic/backend.b)
 
