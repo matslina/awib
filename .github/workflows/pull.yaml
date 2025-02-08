@@ -4,22 +4,19 @@ on:
   pull_request:
     branches:
       - master
+  push:
+    branches:
+      - master
 
 jobs:
-  setup:
-    uses: ./.github/workflows/setup.yaml
-
   test:
-    needs: setup
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v4
 
-    - name: Install deps
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential tcl
+    - uses: ./.github/actions/setup
 
     - name: Run tests
       run: make test

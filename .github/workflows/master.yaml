@@ -1,28 +1,12 @@
-name: Master tests
+name: systest
 
 on:
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master
 
 jobs:
-  setup:
-    uses: ./.github/workflows/setup.yaml
-
-  test:
-    needs: setup
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Run tests
-      run: make test
-
   systest:
-    needs: setup
     runs-on: ubuntu-latest
 
     strategy:
@@ -31,14 +15,16 @@ jobs:
       max-parallel: 10
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v4
+    - uses: ./.github/actions/setup/
     - name: Run system test with ${{ matrix.method }}
+      shell: bash
       run: |
         cd systest
         bash run.sh -m ${{ matrix.method }}
 
   systest-bash:
-    needs: setup
     runs-on: ubuntu-latest
 
     strategy:
@@ -47,18 +33,11 @@ jobs:
       max-parallel: 10
 
     steps:
-    - uses: actions/checkout@v3
-
-    - name: Install deps
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential tcl
-
-    - name: Build awib.b
-      run: |
-        make
-
+    - name: Checkout
+      uses: actions/checkout@v4
+    - uses: .github/actions/setup/
     - name: Run system test with bash for case ${{ matrix.case }}
+      shell: bash
       run: |
         cd systest
         bash run.sh -m bash -c ${{ matrix.case }}
