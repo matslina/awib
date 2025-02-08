@@ -12,11 +12,20 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        component: [386_linux, frontend, go, java, lang_c, ruby, rust, tcl]
+      max-parallel: 10
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-
     - uses: ./.github/actions/setup
 
-    - name: Run tests
-      run: make test
+    - name: Test
+      shell: bash
+      run: echo TEST ${{matrix.component }} x${{ matrix.component }}x  _${{ matrix.component }}_
+
+    - name: Run test ${{ matrix.component }}
+      shell: bash
+      run: PYTHONPATH=test python test/${{ matrix.component }}_test.py
