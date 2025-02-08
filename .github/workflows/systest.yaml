@@ -1,4 +1,4 @@
-name: systest
+name: Sys Test
 
 on:
   push:
