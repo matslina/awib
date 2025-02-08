@@ -1,20 +1,9 @@
-name: awib ci
+name: Setup
+description: "Setup for testing"
 
-on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
+runs:
+  using: "composite"
+  steps:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
@@ -36,11 +25,25 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
 
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        components: clippy, rustfmt # Optional: Add tools you need
+        override: true
+
     - name: Install dependencies
+      shell: bash
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential tcl
 
+    - name: Build awib.b
+      shell: bash
+      run: make
 
-    - name: Run tests
-      run: make test
+    - name: Build bfint
+      shell: bash
+      run: |
+        cd util
+        make

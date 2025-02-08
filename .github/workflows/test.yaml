@@ -1,0 +1,22 @@
+name: Unit Test
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - uses: ./.github/actions/setup
+
+    - name: Run tests
+      run: make test

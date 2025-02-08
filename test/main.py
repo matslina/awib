@@ -1,5 +1,6 @@
-import unittest
+import os
 import sys
+import unittest
 
 if __name__ == "__main__":
     loader = unittest.TestLoader()
@@ -11,7 +12,8 @@ if __name__ == "__main__":
     else:
         suite = loader.discover('.', pattern='*_test.py')
 
-    runner = unittest.TextTestRunner()
+    verbosity = 2 if os.getenv("CI") else 1
+    runner = unittest.TextTestRunner(verbosity=verbosity)
     result = runner.run(suite)
 
     if not result.wasSuccessful():

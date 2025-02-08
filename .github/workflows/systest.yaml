@@ -1,0 +1,43 @@
+name: Sys Test
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  systest:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        method: [bfint gcc tclsh]
+      max-parallel: 10
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - uses: ./.github/actions/setup/
+    - name: Run system test with ${{ matrix.method }}
+      shell: bash
+      run: |
+        cd systest
+        bash run.sh -m ${{ matrix.method }}
+
+  systest-bash:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        case: [empty comments endoffile basicops memoryhog factor]
+      max-parallel: 10
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - uses: .github/actions/setup/
+    - name: Run system test with bash for case ${{ matrix.case }}
+      shell: bash
+      run: |
+        cd systest
+        bash run.sh -m bash -c ${{ matrix.case }}

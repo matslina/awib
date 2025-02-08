@@ -8,7 +8,7 @@ class RubyTest(backend.LangGenericTestCase):
     BACKEND_INDEX = 6
 
     def run_program(self, path, input):
-        p = subprocess.Popen(['/usr/bin/ruby',path],
+        p = subprocess.Popen(['ruby',path],
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE)
         stdout, stderr = p.communicate(input)
