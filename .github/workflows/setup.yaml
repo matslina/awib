@@ -1,15 +1,10 @@
-name: awib ci
+name: Setup
 
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+  workflow_call:
 
 jobs:
-  test:
+  setup:
     runs-on: ubuntu-latest
 
     steps:
@@ -40,7 +35,3 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential tcl
-
-
-    - name: Run tests
-      run: make test

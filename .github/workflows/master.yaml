@@ -1,0 +1,64 @@
+name: Master tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  setup:
+    uses: ./.github/workflows/setup.yaml
+
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run tests
+      run: make test
+
+  systest:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        method: [bfint gcc tclsh]
+      max-parallel: 10
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run system test with ${{ matrix.method }}
+      run: |
+        cd systest
+        bash run.sh -m ${{ matrix.method }}
+
+  systest-bash:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        case: [empty comments endoffile basicops memoryhog factor]
+      max-parallel: 10
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install deps
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential tcl
+
+    - name: Build awib.b
+      run: |
+        make
+
+    - name: Run system test with bash for case ${{ matrix.case }}
+      run: |
+        cd systest
+        bash run.sh -m bash -c ${{ matrix.case }}
