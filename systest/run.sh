@@ -2,7 +2,7 @@
 
 set -e
 
-ALL_TARGETS="lang_c 386_linux lang_go lang_tcl lang_java lang_rust"
+ALL_TARGETS="lang_c 386_linux lang_go lang_tcl lang_ruby lang_java lang_rust"
 ALL_TEST_CASES=$(ls -1Sr *.b | cut -f1 -d.|xargs)
 AWIB_BUILD="../awib.b"
 ALL_METHODS="bfint gcc tclsh bash"
