@@ -229,7 +229,7 @@ class AWIP:
                 if memory_limit is not None and p > memory_limit:
                     raise AWIPRuntimeError("pointer moved beyond memory area")
                 if p >= len(mem):
-                    mem.extend([0]*(1+len(mem)/2))
+                    mem.extend([0]*(1+len(mem)//2))
 
             elif op == INPUT:
                 eof = True

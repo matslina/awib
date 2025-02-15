@@ -64,15 +64,16 @@ class BackendTestCase(common.BFTestCase):
         precond = [0] * 23
         precond.append(self.BACKEND_INDEX)
         precond.extend(ord(c) for c in (''.join(str(op) for op in code)))
-        precond.extend([0, max_depth/256, max_depth%256])
+        precond.extend([0, max_depth//256, max_depth%256])
+
         out, _ = self.run_bf(self.code, [], precondition=precond,
                              pointer=23, steps=steps)
 
         # write backend output to disk
         tmpd = tempfile.mkdtemp("awib_%s" % self.__class__.__name__.lower())
         prog_path = os.path.join(tmpd, 'prog')
-        prog = open(prog_path, "w")
-        prog.write(''.join(chr(i) for i in out))
+        prog = open(prog_path, "wb")
+        prog.write(bytes(out))
         prog.close()
 
         # run backend output
@@ -89,6 +90,21 @@ class BackendTestCase(common.BFTestCase):
 
     def test_empty_program(self):
         self.run_ir([],[],[])
+
+    def test_single_ops(self):
+        self.run_ir([ir.ADD(1)], [], [])
+        self.run_ir([ir.SUB(1)], [], [])
+        self.run_ir([ir.OUTPUT()], [], [0])
+        self.run_ir([ir.INPUT()], [], [])
+        self.run_ir([ir.INPUT()], [42], [])
+        self.run_ir([ir.RIGHT(1)], [], [])
+        self.run_ir([ir.LEFT(1)], [], [])
+        self.run_ir([ir.SET(1)], [], [])
+        self.run_ir([ir.LMUL(1, 1)], [], [])
+        self.run_ir([ir.RMUL(1, 1)], [], [])
+
+    def test_empty_loop(self):
+        self.run_ir([ir.OPEN(), ir.CLOSE()], [], [])
 
     def test_basic_operations(self):
         # ,[->>++++++++<<]>>.[-].[-]+
