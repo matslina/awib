@@ -1,4 +1,4 @@
-![example workflow](https://github.com/matslina/awib/actions/workflows/ci.yaml/badge.svg)
+![CI status](https://github.com/matslina/awib/actions/workflows/systest.yaml/badge.svg)
 
 Awib is a brainfuck compiler entirely written in brainfuck.
 
