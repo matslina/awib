@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master
 
 jobs:
   systest:
@@ -57,7 +54,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
     - uses: ./.github/actions/setup
-    - name: Run system test with bash, case factorize, target ${{ matrix.target }}
+    - name: Run system test with bash, case factor, target ${{ matrix.target }}
       shell: bash
       run: |
         cd systest
