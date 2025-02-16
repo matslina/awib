@@ -17,8 +17,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    - uses: ./.github/actions/setup/
-    - name: Run system test with ${{ matrix.method }}
+    - uses: ./.github/actions/setup
+    - name: Run system tests with ${{ matrix.method }}
       shell: bash
       run: |
         cd systest
@@ -29,15 +29,33 @@ jobs:
 
     strategy:
       matrix:
-        case: [empty comments endoffile basicops memoryhog factor]
+        case: [empty, comments, endoffile, basicops, memoryhog]
       max-parallel: 10
 
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    - uses: .github/actions/setup/
-    - name: Run system test with bash for case ${{ matrix.case }}
+    - uses: ./.github/actions/setup
+    - name: Run system test with bash, case ${{ matrix.case }}
       shell: bash
       run: |
         cd systest
         bash run.sh -m bash -c ${{ matrix.case }}
+
+  systest-bash-factor:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        target: [lang_c, 386_linux, lang_go, lang_tcl, lang_ruby, lang_java, lang_rust]
+      max-parallel: 10
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - uses: ./.github/actions/setup
+    - name: Run system test with bash, case factor, target ${{ matrix.target }}
+      shell: bash
+      run: |
+        cd systest
+        bash run.sh -m bash -c factor -t ${{ matrix.target }}
